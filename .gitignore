@@ -1,0 +1,36 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Jumpscare media files (optional - uncomment to exclude large media files)
+# public/jumpscares/videos/*.mp4
+# public/jumpscares/videos/*.webm
+# public/jumpscares/audio/*.mp3
+# public/jumpscares/audio/*.wav
+# public/jumpscares/audio/*.ogg

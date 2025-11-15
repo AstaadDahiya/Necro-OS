@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculator Possession Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      padding: 20px;
+      background: #1a1a1a;
+      color: #0f0;
+    }
+    
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #0f0;
+      background: #000;
+    }
+    
+    .test-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: #0ff;
+    }
+    
+    .test-controls {
+      margin: 10px 0;
+    }
+    
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+    }
+    
+    button:hover {
+      background: #0ff;
+    }
+    
+    .result {
+      margin: 10px 0;
+      padding: 10px;
+      background: #111;
+      border-left: 3px solid #0f0;
+    }
+    
+    .pass {
+      color: #0f0;
+    }
+    
+    .fail {
+      color: #f00;
+    }
+    
+    .info {
+      color: #ff0;
+    }
+    
+    input[type="number"] {
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 5px;
+      font-family: 'Courier New', monospace;
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧮 Calculator Possession Test Suite</h1>
+  <p>Testing possessed apps service and calculator integration</p>
+
+  <div class="test-section">
+    <div class="test-title">Test 1: Basic Calculator Functions</div>
+    <div class="test-controls">
+      <button onclick="testBasicCalculations()">Run Basic Tests</button>
+    </div>
+    <div id="test1-results"></div>
+  </div>
+
+  <div class="test-section">
+    <div class="test-title">Test 2: Possession Level 0-20 (No Interference)</div>
+    <div class="test-controls">
+      <button onclick="testNoPossession()">Test No Possession</button>
+    </div>
+    <div id="test2-results"></div>
+  </div>
+
+  <div class="test-section">
+    <div class="test-title">Test 3: Possession Level 21-60 (30% Incorrect Results)</div>
+    <div class="test-controls">
+      <button onclick="testModeratePossession()">Test Moderate Possession (Run Multiple Times)</button>
+    </div>
+    <div id="test3-results"></div>
+  </div>
+
+  <div class="test-section">
+    <div class="test-title">Test 4: Possession Level 61+ (Demonic Symbols)</div>
+    <div class="test-controls">
+      <button onclick="testHighPossession()">Test High Possession (Run Multiple Times)</button>
+    </div>
+    <div id="test4-results"></div>
+  </div>
+
+  <div class="test-section">
+    <div class="test-title">Test 5: Interactive Calculator Test</div>
+    <div class="test-controls">
+      <label>Possession Level: <input type="number" id="possessionInput" value="0" min="0" max="100"></label>
+      <button onclick="testInteractive()">Calculate 10 + 5</button>
+    </div>
+    <div id="test5-results"></div>
+  </div>
+
+  <script type="module">
+    // Import the possessed apps service
+    import { 
+      getCalculatorResult, 
+      shouldShowDemonicSymbol, 
+      getDemonicSymbol 
+    } from './src/utils/possessedAppsService.js'
+
+    // Make functions available globally for onclick handlers
+    window.getCalculatorResult = getCalculatorResult
+    window.shouldShowDemonicSymbol = shouldShowDemonicSymbol
+    window.getDemonicSymbol = getDemonicSymbol
+
+    window.testBasicCalculations = function() {
+      const results = document.getElementById('test1-results')
+      results.innerHTML = ''
+      
+      const tests = [
+        { operation: '10 + 5', result: 15 },
+        { operation: '20 - 8', result: 12 },
+        { operation: '6 * 7', result: 42 },
+        { operation: '100 / 4', result: 25 }
+      ]
+      
+      let html = '<div class="result">'
+      tests.forEach(test => {
+        const possessedResult = getCalculatorResult(test.operation, test.result, 0)
+        const passed = possessedResult === test.result
+        html += `<div class="${passed ? 'pass' : 'fail'}">
+          ${test.operation} = ${possessedResult} ${passed ? '✓' : '✗ (expected ' + test.result + ')'}
+        </div>`
+      })
+      html += '</div>'
+      results.innerHTML = html
+    }
+
+    window.testNoPossession = function() {
+      const results = document.getElementById('test2-results')
+      results.innerHTML = ''
+      
+      let html = '<div class="result">'
+      let allPassed = true
+      
+      for (let i = 0; i < 10; i++) {
+        const result = getCalculatorResult('10 + 5', 15, 20)
+        if (result !== 15) {
+          allPassed = false
+          html += `<div class="fail">Test ${i + 1}: Got ${result}, expected 15 ✗</div>`
+        }
+      }
+      
+      if (allPassed) {
+        html += '<div class="pass">All 10 tests passed - no interference at possession level 20 ✓</div>'
+      }
+      html += '</div>'
+      results.innerHTML = html
+    }
+
+    window.testModeratePossession = function() {
+      const results = document.getElementById('test3-results')
+      results.innerHTML = ''
+      
+      let html = '<div class="result">'
+      let incorrectCount = 0
+      const iterations = 100
+      
+      for (let i = 0; i < iterations; i++) {
+        const result = getCalculatorResult('10 + 5', 15, 50)
+        if (result !== 15 && typeof result === 'number') {
+          incorrectCount++
+        }
+      }
+      
+      const percentage = (incorrectCount / iterations * 100).toFixed(1)
+      const inRange = percentage >= 20 && percentage <= 40
+      
+      html += `<div class="${inRange ? 'pass' : 'info'}">
+        ${incorrectCount} out of ${iterations} results were incorrect (${percentage}%)
+        ${inRange ? '✓ Within expected 30% ±10%' : '⚠ Outside expected range (20-40%)'}
+      </div>`
+      html += '<div class="info">Note: Due to randomness, results may vary. Run multiple times for better accuracy.</div>'
+      html += '</div>'
+      results.innerHTML = html
+    }
+
+    window.testHighPossession = function() {
+      const results = document.getElementById('test4-results')
+      results.innerHTML = ''
+      
+      let html = '<div class="result">'
+      let symbolCount = 0
+      const iterations = 50
+      const symbols = []
+      
+      for (let i = 0; i < iterations; i++) {
+        const result = getCalculatorResult('10 + 5', 15, 80)
+        if (typeof result === 'string') {
+          symbolCount++
+          if (!symbols.includes(result)) {
+            symbols.push(result)
+          }
+        }
+      }
+      
+      const percentage = (symbolCount / iterations * 100).toFixed(1)
+      
+      html += `<div class="${symbolCount > 0 ? 'pass' : 'fail'}">
+        ${symbolCount} out of ${iterations} results were demonic symbols (${percentage}%)
+        ${symbolCount > 0 ? '✓' : '✗'}
+      </div>`
+      
+      if (symbols.length > 0) {
+        html += `<div class="info">Symbols encountered: ${symbols.join(' ')}</div>`
+      }
+      
+      html += '<div class="info">Note: Due to randomness, results may vary. Run multiple times.</div>'
+      html += '</div>'
+      results.innerHTML = html
+    }
+
+    window.testInteractive = function() {
+      const results = document.getElementById('test5-results')
+      const possessionLevel = parseInt(document.getElementById('possessionInput').value)
+      
+      const result = getCalculatorResult('10 + 5', 15, possessionLevel)
+      
+      let html = '<div class="result">'
+      html += `<div class="info">Possession Level: ${possessionLevel}</div>`
+      html += `<div class="info">Expected Result: 15</div>`
+      html += `<div class="info">Actual Result: ${result}</div>`
+      
+      if (possessionLevel <= 20) {
+        html += `<div class="${result === 15 ? 'pass' : 'fail'}">
+          ${result === 15 ? 'Correct - No possession interference ✓' : 'Unexpected result ✗'}
+        </div>`
+      } else if (possessionLevel <= 60) {
+        html += `<div class="info">At this level, 30% chance of incorrect result</div>`
+        html += `<div class="${result !== 15 ? 'pass' : 'info'}">
+          ${result !== 15 ? 'Result was altered by possession ✓' : 'Result was correct (70% chance)'}
+        </div>`
+      } else {
+        html += `<div class="info">At this level, demonic symbols may appear</div>`
+        html += `<div class="${typeof result === 'string' ? 'pass' : 'info'}">
+          ${typeof result === 'string' ? 'Demonic symbol appeared! ✓' : 'Numeric result (symbols appear randomly)'}
+        </div>`
+      }
+      
+      html += '</div>'
+      results.innerHTML = html
+    }
+
+    console.log('Calculator Possession Test Suite Loaded')
+    console.log('Available functions:', {
+      getCalculatorResult,
+      shouldShowDemonicSymbol,
+      getDemonicSymbol
+    })
+  </script>
+</body>
+</html>

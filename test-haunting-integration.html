@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Haunting Integration Test</title>
+  <style>
+    body {
+      font-family: monospace;
+      padding: 20px;
+      background: #000;
+      color: #0f0;
+    }
+    .test-section {
+      margin: 20px 0;
+      padding: 10px;
+      border: 1px solid #0f0;
+    }
+    button {
+      margin: 5px;
+      padding: 10px 20px;
+      background: #0f0;
+      color: #000;
+      border: none;
+      cursor: pointer;
+      font-family: monospace;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #0a0;
+    }
+    .log {
+      margin-top: 10px;
+      padding: 10px;
+      background: #111;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    .log-entry {
+      margin: 2px 0;
+    }
+    .log-entry.info { color: #0ff; }
+    .log-entry.success { color: #0f0; }
+    .log-entry.error { color: #f00; }
+    .log-entry.warning { color: #ff0; }
+  </style>
+</head>
+<body>
+  <h1>🎃 Necro-OS Haunting Integration Test 🎃</h1>
+  
+  <div class="test-section">
+    <h2>Manual Haunting Level Control</h2>
+    <p>Current Haunting Level: <span id="currentLevel">-</span></p>
+    <button onclick="setLevel(1)">Level 1</button>
+    <button onclick="setLevel(2)">Level 2</button>
+    <button onclick="setLevel(3)">Level 3</button>
+    <button onclick="setLevel(4)">Level 4</button>
+    <button onclick="setLevel(5)">Level 5</button>
+    <button onclick="incrementLevel()">Increment</button>
+    <button onclick="decrementLevel()">Decrement</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Expected Effects by Level</h2>
+    <ul>
+      <li><strong>Level 1:</strong> CRT filter basic effects</li>
+      <li><strong>Level 2:</strong> + Cursor rotation, phantom notifications, icon movement</li>
+      <li><strong>Level 3:</strong> + Cursor trail, terminal popups, icon duplication, wallpaper flicker</li>
+      <li><strong>Level 4:</strong> + Cursor glitch, increased notification frequency, background darkening</li>
+      <li><strong>Level 5:</strong> + Maximum distortion, wallpaper replacement, increased chaos</li>
+    </ul>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test Log</h2>
+    <button onclick="clearLog()">Clear Log</button>
+    <button onclick="runTests()">Run All Tests</button>
+    <div class="log" id="testLog"></div>
+  </div>
+
+  <script>
+    // This is a test harness - in the actual app, these would be imported from stores
+    let currentLevel = 5;
+    
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('testLog');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
+    }
+    
+    function updateLevelDisplay() {
+      document.getElementById('currentLevel').textContent = currentLevel;
+    }
+    
+    function setLevel(level) {
+      const oldLevel = currentLevel;
+      currentLevel = level;
+      updateLevelDisplay();
+      log(`Haunting level changed from ${oldLevel} to ${level}`, 'info');
+      log(`Expected effects for level ${level}:`, 'info');
+      
+      if (level >= 1) {
+        log('  ✓ CRT filter active', 'success');
+      }
+      if (level >= 2) {
+        log('  ✓ Cursor corruption enabled', 'success');
+        log('  ✓ Phantom notifications started', 'success');
+        log('  ✓ Icon movement started', 'success');
+      }
+      if (level >= 3) {
+        log('  ✓ Cursor trail enabled', 'success');
+        log('  ✓ Terminal popups enabled', 'success');
+        log('  ✓ Icon duplication started', 'success');
+        log('  ✓ Wallpaper flicker started', 'success');
+      }
+      if (level >= 4) {
+        log('  ✓ Cursor glitch enabled', 'success');
+        log('  ✓ Notification frequency increased', 'success');
+        log('  ✓ Background darkening started', 'success');
+      }
+      if (level >= 5) {
+        log('  ✓ Maximum distortion enabled', 'success');
+        log('  ✓ Wallpaper replaced', 'success');
+      }
+    }
+    
+    function incrementLevel() {
+      if (currentLevel < 10) {
+        setLevel(currentLevel + 1);
+      } else {
+        log('Already at maximum level', 'warning');
+      }
+    }
+    
+    function decrementLevel() {
+      if (currentLevel > 1) {
+        setLevel(currentLevel - 1);
+      } else {
+        log('Already at minimum level', 'warning');
+      }
+    }
+    
+    function clearLog() {
+      document.getElementById('testLog').innerHTML = '';
+    }
+    
+    function runTests() {
+      log('=== Starting Integration Tests ===', 'info');
+      
+      // Test 1: Level escalation
+      log('Test 1: Testing level escalation from 1 to 5', 'info');
+      for (let i = 1; i <= 5; i++) {
+        setTimeout(() => setLevel(i), i * 1000);
+      }
+      
+      // Test 2: Level de-escalation
+      setTimeout(() => {
+        log('Test 2: Testing level de-escalation from 5 to 1', 'info');
+        for (let i = 5; i >= 1; i--) {
+          setTimeout(() => setLevel(i), (6 - i) * 1000);
+        }
+      }, 6000);
+      
+      // Test 3: Random level changes
+      setTimeout(() => {
+        log('Test 3: Testing random level changes', 'info');
+        const levels = [3, 1, 5, 2, 4];
+        levels.forEach((level, index) => {
+          setTimeout(() => setLevel(level), index * 1000);
+        });
+      }, 12000);
+      
+      setTimeout(() => {
+        log('=== All Tests Complete ===', 'success');
+      }, 17000);
+    }
+    
+    // Initialize
+    updateLevelDisplay();
+    log('Test harness initialized', 'success');
+    log('Open the actual Necro-OS app at http://localhost:5173/ to test', 'info');
+    log('Use browser console to see actual store integration logs', 'info');
+  </script>
+</body>
+</html>

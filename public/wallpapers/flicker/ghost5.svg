@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <rect width="1024" height="768" fill="#000033"/>
+  <g opacity="0.3">
+    <circle cx="512" cy="384" r="200" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="512" cy="384" r="150" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="512" cy="384" r="100" fill="none" stroke="#ffffff" stroke-width="2"/>
+    <circle cx="512" cy="384" r="50" fill="none" stroke="#ffffff" stroke-width="2"/>
+  </g>
+  <text x="512" y="600" font-family="Arial" font-size="36" fill="#ffffff" opacity="0.5" text-anchor="middle">YOU CANNOT ESCAPE</text>
+</svg>

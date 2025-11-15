@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Necro-OS Visual Corruption Test Suite</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #ffffff;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #00ff00;
+      text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    }
+
+    .test-section {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid #00ff00;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .test-section h2 {
+      color: #00ff00;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .test-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background: #008080;
+      color: white;
+      border: 2px outset #00a0a0;
+      padding: 8px 16px;
+      cursor: pointer;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      font-size: 11px;
+      min-width: 120px;
+    }
+
+    button:hover {
+      background: #00a0a0;
+    }
+
+    button:active {
+      border-style: inset;
+    }
+
+    button:disabled {
+      background: #808080;
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+
+    .status {
+      padding: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 4px solid #00ff00;
+      margin-top: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+    }
+
+    .status.error {
+      border-left-color: #ff0000;
+      color: #ff6666;
+    }
+
+    .status.success {
+      border-left-color: #00ff00;
+      color: #66ff66;
+    }
+
+    .status.warning {
+      border-left-color: #ffff00;
+      color: #ffff66;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+
+    .metric-card {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 4px;
+      border: 1px solid #00ff00;
+    }
+
+    .metric-label {
+      font-size: 11px;
+      color: #aaaaaa;
+      margin-bottom: 5px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: bold;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+    }
+
+    .metric-value.warning {
+      color: #ffff00;
+    }
+
+    .metric-value.error {
+      color: #ff0000;
+    }
+
+    .test-log {
+      background: #000000;
+      color: #00ff00;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+      border: 1px solid #00ff00;
+    }
+
+    .test-log div {
+      margin: 2px 0;
+    }
+
+    .browser-info {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      border: 1px solid #00ff00;
+    }
+
+    .browser-info h3 {
+      color: #00ff00;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    .browser-info p {
+      margin: 5px 0;
+      font-size: 12px;
+    }
+
+    .checklist {
+      list-style: none;
+      padding: 0;
+    }
+
+    .checklist li {
+      padding: 8px;
+      margin: 5px 0;
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 3px solid #808080;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .checklist li:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .checklist li.checked {
+      border-left-color: #00ff00;
+      color: #66ff66;
+    }
+
+    .checklist li.checked::before {
+      content: '✓ ';
+      color: #00ff00;
+      font-weight: bold;
+    }
+
+    input[type="range"] {
+      width: 200px;
+      margin: 0 10px;
+    }
+
+    .level-display {
+      display: inline-block;
+      min-width: 30px;
+      text-align: center;
+      color: #00ff00;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎃 Necro-OS Visual Corruption Test Suite 👻</h1>
+
+    <!-- Browser Information -->
+    <div class="browser-info">
+      <h3>Browser Information</h3>
+      <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+      <p><strong>Browser:</strong> <span id="browserName"></span></p>
+      <p><strong>Platform:</strong> <span id="platform"></span></p>
+      <p><strong>Screen:</strong> <span id="screenSize"></span></p>
+      <p><strong>Web Speech API:</strong> <span id="speechSupport"></span></p>
+      <p><strong>Web Audio API:</strong> <span id="audioSupport"></span></p>
+    </div>
+
+    <!-- Global Controls -->
+    <div class="test-section">
+      <h2>Global Controls</h2>
+      <div class="test-controls">
+        <label>
+          Haunting Level:
+          <input type="range" id="hauntingLevel" min="0" max="10" value="0" />
+          <span class="level-display" id="levelDisplay">0</span>
+        </label>
+        <button onclick="openNecroOS()">Open Necro-OS</button>
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearLog()">Clear Log</button>
+      </div>
+      <div id="globalStatus" class="status">Ready to test. Open Necro-OS in another tab to begin.</div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="test-section">
+      <h2>Performance Metrics</h2>
+      <div class="test-controls">
+        <button onclick="startFPSMonitor()">Start FPS Monitor</button>
+        <button onclick="stopFPSMonitor()">Stop FPS Monitor</button>
+        <button onclick="checkMemory()">Check Memory</button>
+        <button onclick="startMemoryTest()">30-Min Memory Test</button>
+      </div>
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-label">Current FPS</div>
+          <div class="metric-value" id="fpsValue">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Memory Usage</div>
+          <div class="metric-value" id="memoryValue">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Heap Size</div>
+          <div class="metric-value" id="heapValue">--</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Test Duration</div>
+          <div class="metric-value" id="durationValue">00:00</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test 15.1: CRT Filter -->
+    <div class="test-section">
+      <h2>15.1 Test CRT Filter</h2>
+      <div class="test-controls">
+        <button onclick="testCRTBasic()">Test Basic Rendering</button>
+        <button onclick="testCRTDistortion()">Test Distortion</button>
+        <button onclick="testCRTFlicker()">Test Flicker</button>
+        <button onclick="testCRTPerformance()">Test Performance</button>
+      </div>
+      <ul class="checklist" id="crtChecklist">
+        <li onclick="toggleCheck(this)">Scanlines render correctly</li>
+        <li onclick="toggleCheck(this)">Barrel distortion visible</li>
+        <li onclick="toggleCheck(this)">Phosphor glow present</li>
+        <li onclick="toggleCheck(this)">Flicker animation works (level 3+)</li>
+        <li onclick="toggleCheck(this)">Performance >50fps</li>
+      </ul>
+      <div id="crtStatus" class="status"></div>
+    </div>
+
+    <!-- Test 15.2: Cursor Corruption -->
+    <div class="test-section">
+      <h2>15.2 Test Cursor Corruption</h2>
+      <div class="test-controls">
+        <button onclick="testCursorBasic()">Test Custom Cursor</button>
+        <button onclick="testCursorTrail()">Test Trail</button>
+        <button onclick="testCursorGlitch()">Test Glitch</button>
+        <button onclick="testCursorTeleport()">Test Teleport</button>
+      </div>
+      <ul class="checklist" id="cursorChecklist">
+        <li onclick="toggleCheck(this)">Custom cursor appears</li>
+        <li onclick="toggleCheck(this)">Cursor rotation works</li>
+        <li onclick="toggleCheck(this)">Ghost trail renders</li>
+        <li onclick="toggleCheck(this)">Glitch effect visible</li>
+        <li onclick="toggleCheck(this)">Teleportation works</li>
+        <li onclick="toggleCheck(this)">Autonomous movement works</li>
+      </ul>
+      <div id="cursorStatus" class="status"></div>
+    </div>
+
+    <!-- Test 15.3: Spirit Board -->
+    <div class="test-section">
+      <h2>15.3 Test Spirit Board</h2>
+      <div class="test-controls">
+        <button onclick="testSpiritBoardOpen()">Open Spirit Board</button>
+        <button onclick="testSpiritBoardAnimation()">Test Animation</button>
+        <button onclick="testSpiritBoardSpeech()">Test Speech API</button>
+      </div>
+      <ul class="checklist" id="spiritChecklist">
+        <li onclick="toggleCheck(this)">Board opens correctly</li>
+        <li onclick="toggleCheck(this)">Planchette animation smooth</li>
+        <li onclick="toggleCheck(this)">Letter positioning accurate</li>
+        <li onclick="toggleCheck(this)">Letter highlighting works</li>
+        <li onclick="toggleCheck(this)">Web Speech API whispers</li>
+        <li onclick="toggleCheck(this)">Multi-word responses work</li>
+        <li onclick="toggleCheck(this)">GOODBYE sequence works</li>
+      </ul>
+      <div id="spiritStatus" class="status"></div>
+    </div>
+
+    <!-- Test 15.4: Terminal Popups -->
+    <div class="test-section">
+      <h2>15.4 Test Terminal Popups</h2>
+      <div class="test-controls">
+        <button onclick="testTerminalSpawn()">Spawn Terminal</button>
+        <button onclick="testTerminalTyping()">Test Auto-Typing</button>
+        <button onclick="testTerminalColors()">Test ANSI Colors</button>
+        <button onclick="testTerminalLimit()">Test Concurrent Limit</button>
+      </div>
+      <ul class="checklist" id="terminalChecklist">
+        <li onclick="toggleCheck(this)">Terminal spawns correctly</li>
+        <li onclick="toggleCheck(this)">Auto-typing works (50ms/char)</li>
+        <li onclick="toggleCheck(this)">ANSI colors render</li>
+        <li onclick="toggleCheck(this)">Blinking cursor visible</li>
+        <li onclick="toggleCheck(this)">Auto-close after 10s</li>
+        <li onclick="toggleCheck(this)">Concurrent limit (max 2)</li>
+      </ul>
+      <div id="terminalStatus" class="status"></div>
+    </div>
+
+    <!-- Test 15.5: BIOS Screen -->
+    <div class="test-section">
+      <h2>15.5 Test BIOS Screen</h2>
+      <div class="test-controls">
+        <button onclick="testBIOSDisplay()">Test Display</button>
+        <button onclick="testBIOSTyping()">Test Auto-Typing</button>
+        <button onclick="testBIOSBeep()">Test Beep Sound</button>
+        <button onclick="testBIOSF13()">Test F13 Easter Egg</button>
+      </div>
+      <ul class="checklist" id="biosChecklist">
+        <li onclick="toggleCheck(this)">BIOS screen displays</li>
+        <li onclick="toggleCheck(this)">Auto-typing works (20ms/char)</li>
+        <li onclick="toggleCheck(this)">PC speaker beep plays</li>
+        <li onclick="toggleCheck(this)">Hardware detection shown</li>
+        <li onclick="toggleCheck(this)">Date shows Oct 31, 1995</li>
+        <li onclick="toggleCheck(this)">F13 Easter egg works</li>
+        <li onclick="toggleCheck(this)">Transition smooth</li>
+      </ul>
+      <div id="biosStatus" class="status"></div>
+    </div>
+
+    <!-- Test Log -->
+    <div class="test-section">
+      <h2>Test Log</h2>
+      <div class="test-log" id="testLog"></div>
+    </div>
+  </div>
+
+  <script>
+    // Initialize browser info
+    document.getElementById('userAgent').textContent = navigator.userAgent;
+    document.getElementById('browserName').textContent = getBrowserName();
+    document.getElementById('platform').textContent = navigator.platform;
+    document.getElementById('screenSize').textContent = `${screen.width}x${screen.height}`;
+    document.getElementById('speechSupport').textContent = 'speechSynthesis' in window ? '✓ Supported' : '✗ Not Supported';
+    document.getElementById('audioSupport').textContent = 'AudioContext' in window || 'webkitAudioContext' in window ? '✓ Supported' : '✗ Not Supported';
+
+    // Get browser name
+    function getBrowserName() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Firefox')) return 'Firefox';
+      if (ua.includes('Edg')) return 'Edge';
+      if (ua.includes('Chrome')) return 'Chrome';
+      if (ua.includes('Safari')) return 'Safari';
+      return 'Unknown';
+    }
+
+    // Haunting level control
+    document.getElementById('hauntingLevel').addEventListener('input', (e) => {
+      const level = e.target.value;
+      document.getElementById('levelDisplay').textContent = level;
+      log(`Haunting level set to ${level}`, 'info');
+    });
+
+    // Logging
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('testLog');
+      const timestamp = new Date().toLocaleTimeString();
+      const entry = document.createElement('div');
+      entry.style.color = type === 'error' ? '#ff6666' : type === 'success' ? '#66ff66' : type === 'warning' ? '#ffff66' : '#00ff00';
+      entry.textContent = `[${timestamp}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('testLog').innerHTML = '';
+      log('Log cleared', 'info');
+    }
+
+    // Status updates
+    function updateStatus(elementId, message, type = 'info') {
+      const element = document.getElementById(elementId);
+      element.textContent = message;
+      element.className = `status ${type}`;
+    }
+
+    // Checklist toggle
+    function toggleCheck(element) {
+      element.classList.toggle('checked');
+    }
+
+    // Open Necro-OS
+    function openNecroOS() {
+      window.open('/', '_blank');
+      log('Opened Necro-OS in new tab', 'success');
+      updateStatus('globalStatus', 'Necro-OS opened. Use browser DevTools to test.', 'success');
+    }
+
+    // FPS Monitor
+    let fpsMonitorRunning = false;
+    let fpsFrames = 0;
+    let fpsLastTime = performance.now();
+
+    function startFPSMonitor() {
+      if (fpsMonitorRunning) return;
+      fpsMonitorRunning = true;
+      log('FPS monitor started', 'success');
+      monitorFPS();
+    }
+
+    function stopFPSMonitor() {
+      fpsMonitorRunning = false;
+      log('FPS monitor stopped', 'info');
+    }
+
+    function monitorFPS() {
+      if (!fpsMonitorRunning) return;
+      
+      fpsFrames++;
+      const now = performance.now();
+      
+      if (now >= fpsLastTime + 1000) {
+        const fps = Math.round(fpsFrames * 1000 / (now - fpsLastTime));
+        const fpsElement = document.getElementById('fpsValue');
+        fpsElement.textContent = fps;
+        
+        if (fps < 50) {
+          fpsElement.className = 'metric-value error';
+        } else if (fps < 55) {
+          fpsElement.className = 'metric-value warning';
+        } else {
+          fpsElement.className = 'metric-value';
+        }
+        
+        fpsFrames = 0;
+        fpsLastTime = now;
+      }
+      
+      requestAnimationFrame(monitorFPS);
+    }
+
+    // Memory monitoring
+    function checkMemory() {
+      if (performance.memory) {
+        const used = (performance.memory.usedJSHeapSize / 1048576).toFixed(2);
+        const total = (performance.memory.totalJSHeapSize / 1048576).toFixed(2);
+        
+        document.getElementById('memoryValue').textContent = `${used} MB`;
+        document.getElementById('heapValue').textContent = `${total} MB`;
+        
+        log(`Memory: ${used} MB / ${total} MB`, 'info');
+      } else {
+        log('Memory API not available in this browser', 'warning');
+      }
+    }
+
+    // 30-minute memory test
+    let memoryTestRunning = false;
+    let memoryTestStart = 0;
+
+    function startMemoryTest() {
+      if (memoryTestRunning) {
+        log('Memory test already running', 'warning');
+        return;
+      }
+      
+      memoryTestRunning = true;
+      memoryTestStart = Date.now();
+      log('30-minute memory test started', 'success');
+      
+      const interval = setInterval(() => {
+        if (!memoryTestRunning) {
+          clearInterval(interval);
+          return;
+        }
+        
+        const elapsed = Date.now() - memoryTestStart;
+        const minutes = Math.floor(elapsed / 60000);
+        const seconds = Math.floor((elapsed % 60000) / 1000);
+        
+        document.getElementById('durationValue').textContent = 
+          `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        
+        checkMemory();
+        
+        if (elapsed >= 30 * 60 * 1000) {
+          memoryTestRunning = false;
+          log('30-minute memory test completed', 'success');
+        }
+      }, 1000);
+    }
+
+    // Test functions
+    function testCRTBasic() {
+      log('Testing CRT basic rendering...', 'info');
+      updateStatus('crtStatus', 'Open Necro-OS and check for scanlines, phosphor glow, and barrel distortion', 'info');
+    }
+
+    function testCRTDistortion() {
+      log('Testing CRT distortion...', 'info');
+      updateStatus('crtStatus', 'Set haunting level to 5 and observe increased barrel distortion', 'info');
+    }
+
+    function testCRTFlicker() {
+      log('Testing CRT flicker...', 'info');
+      updateStatus('crtStatus', 'Set haunting level to 3+ and observe screen flicker', 'info');
+    }
+
+    function testCRTPerformance() {
+      log('Testing CRT performance...', 'info');
+      startFPSMonitor();
+      updateStatus('crtStatus', 'FPS monitor started. Check that FPS stays above 50', 'info');
+    }
+
+    function testCursorBasic() {
+      log('Testing custom cursor...', 'info');
+      updateStatus('cursorStatus', 'Set haunting level to 2 and check for custom cursor', 'info');
+    }
+
+    function testCursorTrail() {
+      log('Testing cursor trail...', 'info');
+      updateStatus('cursorStatus', 'Set haunting level to 3 and move cursor to see trail', 'info');
+    }
+
+    function testCursorGlitch() {
+      log('Testing cursor glitch...', 'info');
+      updateStatus('cursorStatus', 'Set haunting level to 4 and wait for glitch effect (every 5s)', 'info');
+    }
+
+    function testCursorTeleport() {
+      log('Testing cursor teleport...', 'info');
+      updateStatus('cursorStatus', 'Set haunting level to 4 and wait for teleportation', 'info');
+    }
+
+    function testSpiritBoardOpen() {
+      log('Testing Spirit Board...', 'info');
+      updateStatus('spiritStatus', 'Open Spirit Board from Start Menu', 'info');
+    }
+
+    function testSpiritBoardAnimation() {
+      log('Testing planchette animation...', 'info');
+      updateStatus('spiritStatus', 'Ask a question and observe planchette movement', 'info');
+    }
+
+    function testSpiritBoardSpeech() {
+      log('Testing Web Speech API...', 'info');
+      if ('speechSynthesis' in window) {
+        updateStatus('spiritStatus', 'Ask a question and listen for letter whispers', 'success');
+      } else {
+        updateStatus('spiritStatus', 'Web Speech API not supported in this browser', 'error');
+      }
+    }
+
+    function testTerminalSpawn() {
+      log('Testing terminal spawn...', 'info');
+      updateStatus('terminalStatus', 'Set haunting level to 3 and wait for terminal popup', 'info');
+    }
+
+    function testTerminalTyping() {
+      log('Testing terminal auto-typing...', 'info');
+      updateStatus('terminalStatus', 'Observe character-by-character typing (50ms/char)', 'info');
+    }
+
+    function testTerminalColors() {
+      log('Testing ANSI colors...', 'info');
+      updateStatus('terminalStatus', 'Check that ERROR is red, WARNING is yellow, INFO is cyan', 'info');
+    }
+
+    function testTerminalLimit() {
+      log('Testing concurrent terminal limit...', 'info');
+      updateStatus('terminalStatus', 'Try spawning 3+ terminals (max should be 2)', 'info');
+    }
+
+    function testBIOSDisplay() {
+      log('Testing BIOS display...', 'info');
+      updateStatus('biosStatus', 'Refresh page to see BIOS screen', 'info');
+    }
+
+    function testBIOSTyping() {
+      log('Testing BIOS auto-typing...', 'info');
+      updateStatus('biosStatus', 'Observe typing speed (20ms per character)', 'info');
+    }
+
+    function testBIOSBeep() {
+      log('Testing PC speaker beep...', 'info');
+      updateStatus('biosStatus', 'Listen for beep sound at BIOS start', 'info');
+    }
+
+    function testBIOSF13() {
+      log('Testing F13 Easter egg...', 'info');
+      updateStatus('biosStatus', 'Refresh until F13 message appears, then press F13', 'info');
+    }
+
+    function runAllTests() {
+      log('Running all tests...', 'success');
+      log('Please follow the test guide and check each item manually', 'info');
+      startFPSMonitor();
+      checkMemory();
+      updateStatus('globalStatus', 'All tests initiated. Follow test procedures in guide.', 'success');
+    }
+
+    // Initialize
+    log('Visual Corruption Test Suite loaded', 'success');
+    log('Click "Open Necro-OS" to begin testing', 'info');
+  </script>
+</body>
+</html>

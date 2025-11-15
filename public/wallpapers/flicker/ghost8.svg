@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <rect width="1024" height="768" fill="#000000"/>
+  <g opacity="0.3">
+    <text x="512" y="100" font-family="Arial" font-size="200" fill="#ffffff" text-anchor="middle">👁️</text>
+    <text x="512" y="668" font-family="Arial" font-size="200" fill="#ffffff" text-anchor="middle">👁️</text>
+  </g>
+  <text x="512" y="384" font-family="Courier" font-size="36" fill="#ff0000" opacity="0.5" text-anchor="middle">I SEE YOU</text>
+</svg>

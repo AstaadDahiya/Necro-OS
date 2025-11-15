@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ending System Test - NecroOS</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #f00;
+      text-shadow: 0 0 10px #f00;
+      border-bottom: 2px solid #f00;
+      padding-bottom: 10px;
+    }
+    
+    h2 {
+      color: #ff0;
+      margin-top: 30px;
+    }
+    
+    .test-section {
+      background: rgba(0, 255, 0, 0.05);
+      border: 1px solid #0f0;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+    
+    button {
+      background: #000;
+      color: #0f0;
+      border: 2px solid #0f0;
+      padding: 10px 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: #0f0;
+      color: #000;
+      box-shadow: 0 0 10px #0f0;
+    }
+    
+    button.danger {
+      border-color: #f00;
+      color: #f00;
+    }
+    
+    button.danger:hover {
+      background: #f00;
+      color: #000;
+      box-shadow: 0 0 10px #f00;
+    }
+    
+    button.warning {
+      border-color: #ff0;
+      color: #ff0;
+    }
+    
+    button.warning:hover {
+      background: #ff0;
+      color: #000;
+      box-shadow: 0 0 10px #ff0;
+    }
+    
+    .status {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid #666;
+      padding: 15px;
+      margin: 15px 0;
+      font-size: 14px;
+    }
+    
+    .status-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 5px 0;
+      border-bottom: 1px solid #333;
+    }
+    
+    .status-row:last-child {
+      border-bottom: none;
+    }
+    
+    .status-label {
+      color: #888;
+    }
+    
+    .status-value {
+      color: #0f0;
+      font-weight: bold;
+    }
+    
+    .log {
+      background: #000;
+      border: 1px solid #0f0;
+      padding: 15px;
+      margin: 15px 0;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+    
+    .log-entry {
+      padding: 2px 0;
+      color: #0f0;
+    }
+    
+    .log-entry.error {
+      color: #f00;
+    }
+    
+    .log-entry.warning {
+      color: #ff0;
+    }
+    
+    .log-entry.info {
+      color: #0ff;
+    }
+    
+    .instructions {
+      background: rgba(255, 255, 0, 0.1);
+      border: 1px solid #ff0;
+      padding: 15px;
+      margin: 20px 0;
+    }
+    
+    .instructions h3 {
+      color: #ff0;
+      margin-top: 0;
+    }
+    
+    .instructions ol {
+      margin: 10px 0;
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎮 Ending System Test Suite</h1>
+    
+    <div class="instructions">
+      <h3>📋 Test Instructions</h3>
+      <ol>
+        <li>Use the controls below to manipulate possession level and session time</li>
+        <li>Trigger different endings to verify they display correctly</li>
+        <li>Test the "Consumed" ending by closing the browser tab with high possession</li>
+        <li>Verify statistics are displayed correctly in ending screens</li>
+        <li>Test restart and continue functionality</li>
+      </ol>
+    </div>
+    
+    <div class="test-section">
+      <h2>📊 Current Status</h2>
+      <div class="status" id="status">
+        <div class="status-row">
+          <span class="status-label">Possession Level:</span>
+          <span class="status-value" id="possessionLevel">0</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Session Time:</span>
+          <span class="status-value" id="sessionTime">0:00</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Ending Reached:</span>
+          <span class="status-value" id="endingReached">None</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Exorcisms Performed:</span>
+          <span class="status-value" id="exorcismsPerformed">0</span>
+        </div>
+        <div class="status-row">
+          <span class="status-label">Total Sessions:</span>
+          <span class="status-value" id="totalSessions">0</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>🎛️ Possession Level Controls</h2>
+      <div class="button-group">
+        <button onclick="setPossession(0)">Set to 0%</button>
+        <button onclick="setPossession(25)">Set to 25%</button>
+        <button onclick="setPossession(50)">Set to 50%</button>
+        <button onclick="setPossession(75)">Set to 75%</button>
+        <button onclick="setPossession(100)" class="danger">Set to 100%</button>
+        <button onclick="increasePossession(10)">+10%</button>
+        <button onclick="decreasePossession(10)">-10%</button>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>⏱️ Session Time Controls</h2>
+      <div class="button-group">
+        <button onclick="setSessionTime(0)">Reset Time</button>
+        <button onclick="setSessionTime(5)">5 minutes</button>
+        <button onclick="setSessionTime(15)">15 minutes</button>
+        <button onclick="setSessionTime(30)" class="warning">30 minutes (Survivor)</button>
+        <button onclick="setSessionTime(45)">45 minutes</button>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>🎬 Trigger Endings</h2>
+      <div class="button-group">
+        <button onclick="triggerSurvivorEnding()" class="warning">Trigger Survivor Ending</button>
+        <button onclick="triggerPurifiedEnding()">Trigger Purified Ending</button>
+        <button onclick="triggerPossessedEnding()" class="danger">Trigger Possessed Ending</button>
+        <button onclick="setupConsumedTest()" class="danger">Setup Consumed Test</button>
+      </div>
+      <p style="color: #888; font-size: 12px; margin-top: 10px;">
+        Note: For Consumed ending, click "Setup Consumed Test" then close the browser tab.
+        Reopen this page to see the warning.
+      </p>
+    </div>
+    
+    <div class="test-section">
+      <h2>🔧 Utility Functions</h2>
+      <div class="button-group">
+        <button onclick="checkEndingConditions()">Check Ending Conditions</button>
+        <button onclick="performExorcism()">Perform Exorcism (-15)</button>
+        <button onclick="clearProgress()" class="danger">Clear All Progress</button>
+        <button onclick="refreshStatus()">Refresh Status</button>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>📝 Event Log</h2>
+      <div class="log" id="log"></div>
+      <button onclick="clearLog()">Clear Log</button>
+    </div>
+  </div>
+  
+  <script type="module">
+    import { createApp } from 'vue'
+    import { createPinia } from 'pinia'
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js'
+    import EndingScreen from './src/components/EndingScreen.vue'
+    
+    // Create Vue app with Pinia
+    const pinia = createPinia()
+    const app = createApp({
+      components: { EndingScreen },
+      template: '<EndingScreen />'
+    })
+    app.use(pinia)
+    app.mount('#app')
+    
+    // Get store instance
+    const store = useAdvancedHauntingStore()
+    
+    // Initialize store
+    store.initialize()
+    
+    // Make store available globally for testing
+    window.advancedHaunting = store
+    
+    // Logging function
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log')
+      const entry = document.createElement('div')
+      entry.className = `log-entry ${type}`
+      const timestamp = new Date().toLocaleTimeString()
+      entry.textContent = `[${timestamp}] ${message}`
+      logDiv.appendChild(entry)
+      logDiv.scrollTop = logDiv.scrollHeight
+      console.log(`[${type.toUpperCase()}] ${message}`)
+    }
+    
+    // Status update function
+    function updateStatus() {
+      document.getElementById('possessionLevel').textContent = `${store.possessionLevel}%`
+      
+      if (store.sessionStartTime) {
+        const duration = Date.now() - store.sessionStartTime
+        const minutes = Math.floor(duration / 60000)
+        const seconds = Math.floor((duration % 60000) / 1000)
+        document.getElementById('sessionTime').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`
+      } else {
+        document.getElementById('sessionTime').textContent = '0:00'
+      }
+      
+      document.getElementById('endingReached').textContent = store.endingReached || 'None'
+      document.getElementById('exorcismsPerformed').textContent = store.statistics.exorcismsPerformed
+      document.getElementById('totalSessions').textContent = store.statistics.totalSessions
+    }
+    
+    // Update status every second
+    setInterval(updateStatus, 1000)
+    updateStatus()
+    
+    // Listen for ending events
+    window.addEventListener('necro-ending-reached', (event) => {
+      log(`Ending reached: ${event.detail.ending}`, 'warning')
+      updateStatus()
+    })
+    
+    window.addEventListener('necro-consumed-warning', (event) => {
+      log(`Consumed warning detected from ${event.detail.possessionLevel}% possession`, 'error')
+    })
+    
+    // Global test functions
+    window.setPossession = (level) => {
+      store.setPossessionLevel(level)
+      log(`Set possession level to ${level}%`)
+      updateStatus()
+    }
+    
+    window.increasePossession = (amount) => {
+      store.increasePossession(amount)
+      log(`Increased possession by ${amount}`)
+      updateStatus()
+    }
+    
+    window.decreasePossession = (amount) => {
+      store.decreasePossession(amount)
+      log(`Decreased possession by ${amount}`)
+      updateStatus()
+    }
+    
+    window.setSessionTime = (minutes) => {
+      const targetTime = Date.now() - (minutes * 60000)
+      store.sessionStartTime = targetTime
+      log(`Set session time to ${minutes} minutes ago`)
+      updateStatus()
+    }
+    
+    window.triggerSurvivorEnding = () => {
+      // Set conditions for survivor ending
+      store.setPossessionLevel(45)
+      store.sessionStartTime = Date.now() - (31 * 60000) // 31 minutes ago
+      log('Set up Survivor ending conditions (30+ min, <50% possession)')
+      
+      // Check conditions
+      setTimeout(() => {
+        const result = store.checkEndingConditions()
+        if (result === 'survivor') {
+          log('Survivor ending triggered!', 'warning')
+        } else {
+          log('Survivor ending not triggered. Check conditions.', 'error')
+        }
+        updateStatus()
+      }, 100)
+    }
+    
+    window.triggerPurifiedEnding = () => {
+      // Set conditions for purified ending
+      store.setPossessionLevel(0)
+      store.sessionStartTime = Date.now() - (6 * 60000) // 6 minutes ago
+      log('Set up Purified ending conditions (0% possession, 5+ min session)')
+      
+      // Check conditions
+      setTimeout(() => {
+        const result = store.checkEndingConditions()
+        if (result === 'purified') {
+          log('Purified ending triggered!', 'warning')
+        } else {
+          log('Purified ending not triggered. Check conditions.', 'error')
+        }
+        updateStatus()
+      }, 100)
+    }
+    
+    window.triggerPossessedEnding = () => {
+      // Set conditions for possessed ending
+      store.setPossessionLevel(100)
+      log('Set up Possessed ending conditions (100% possession)')
+      
+      // Check conditions
+      setTimeout(() => {
+        const result = store.checkEndingConditions()
+        if (result === 'possessed') {
+          log('Possessed ending triggered!', 'error')
+        } else {
+          log('Possessed ending not triggered. Check conditions.', 'error')
+        }
+        updateStatus()
+      }, 100)
+    }
+    
+    window.setupConsumedTest = () => {
+      store.setPossessionLevel(75)
+      log('Set possession to 75% for Consumed ending test', 'warning')
+      log('Now close this browser tab and reopen to see the warning', 'warning')
+      updateStatus()
+    }
+    
+    window.checkEndingConditions = () => {
+      const result = store.checkEndingConditions()
+      if (result) {
+        log(`Ending condition met: ${result}`, 'warning')
+      } else {
+        log('No ending conditions met')
+      }
+      updateStatus()
+    }
+    
+    window.performExorcism = () => {
+      store.decreasePossession(15)
+      store.statistics.exorcismsPerformed++
+      log('Performed exorcism (-15 possession)')
+      updateStatus()
+    }
+    
+    window.clearProgress = () => {
+      if (confirm('Are you sure you want to clear all progress?')) {
+        store.clearProgress()
+        log('All progress cleared', 'warning')
+        updateStatus()
+      }
+    }
+    
+    window.refreshStatus = () => {
+      updateStatus()
+      log('Status refreshed')
+    }
+    
+    window.clearLog = () => {
+      document.getElementById('log').innerHTML = ''
+      log('Log cleared')
+    }
+    
+    // Initial log
+    log('Ending System Test Suite initialized')
+    log(`Current possession: ${store.possessionLevel}%`)
+    log(`Session started: ${store.sessionStartTime ? 'Yes' : 'No'}`)
+  </script>
+  
+  <!-- Mount point for EndingScreen component -->
+  <div id="app"></div>
+</body>
+</html>

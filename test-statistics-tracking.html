@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Statistics Tracking Test - NecroOS</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #f00;
+      text-shadow: 0 0 10px #f00;
+      margin-bottom: 20px;
+    }
+    
+    h2 {
+      color: #0ff;
+      margin-top: 30px;
+      margin-bottom: 15px;
+    }
+    
+    .section {
+      background: #111;
+      border: 2px solid #0f0;
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 5px;
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+    
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+    
+    button:hover {
+      background: #0ff;
+      transform: scale(1.05);
+    }
+    
+    button:active {
+      transform: scale(0.95);
+    }
+    
+    .danger {
+      background: #f00 !important;
+      color: #fff !important;
+    }
+    
+    .danger:hover {
+      background: #ff4444 !important;
+    }
+    
+    .stats-display {
+      background: #000;
+      border: 1px solid #0f0;
+      padding: 15px;
+      margin-top: 15px;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .stat-line {
+      margin: 5px 0;
+    }
+    
+    .stat-label {
+      color: #0ff;
+      font-weight: bold;
+    }
+    
+    .stat-value {
+      color: #0f0;
+    }
+    
+    .event-item {
+      background: #222;
+      padding: 8px;
+      margin: 5px 0;
+      border-left: 3px solid #0f0;
+    }
+    
+    .event-type {
+      color: #ff0;
+      font-weight: bold;
+    }
+    
+    .event-time {
+      color: #888;
+      font-size: 12px;
+    }
+    
+    .log {
+      background: #000;
+      border: 1px solid #666;
+      padding: 10px;
+      margin-top: 10px;
+      max-height: 200px;
+      overflow-y: auto;
+      font-size: 12px;
+      color: #888;
+    }
+    
+    .log-entry {
+      margin: 2px 0;
+    }
+    
+    .success {
+      color: #0f0;
+    }
+    
+    .error {
+      color: #f00;
+    }
+    
+    .info {
+      color: #0ff;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📊 Statistics Tracking Test</h1>
+    
+    <div class="section">
+      <h2>Possession Level Controls</h2>
+      <div class="button-group">
+        <button onclick="increasePossession(5)">+5 Possession</button>
+        <button onclick="increasePossession(10)">+10 Possession</button>
+        <button onclick="decreasePossession(5)">-5 Possession</button>
+        <button onclick="decreasePossession(10)">-10 Possession</button>
+        <button onclick="setPossession(50)">Set to 50</button>
+        <button onclick="setPossession(100)">Set to 100</button>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Event Recording</h2>
+      <div class="button-group">
+        <button onclick="recordCustomEvent('test_event')">Record Test Event</button>
+        <button onclick="simulateExorcism()">Simulate Exorcism</button>
+        <button onclick="simulateJumpscare()">Simulate Jumpscare</button>
+        <button onclick="simulateAchievement()">Simulate Achievement</button>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Session Controls</h2>
+      <div class="button-group">
+        <button onclick="startNewSession()">Start New Session</button>
+        <button onclick="endCurrentSession()">End Session</button>
+        <button onclick="simulateSessionTime()">Simulate 5 Min Session</button>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Persistence Controls</h2>
+      <div class="button-group">
+        <button onclick="saveProgress()">Save to LocalStorage</button>
+        <button onclick="loadProgress()">Load from LocalStorage</button>
+        <button onclick="clearProgress()" class="danger">Clear All Progress</button>
+        <button onclick="testQuotaExceeded()">Test Quota Exceeded</button>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Statistics Display</h2>
+      <button onclick="refreshStats()">Refresh Statistics</button>
+      <div id="stats-display" class="stats-display">
+        Click "Refresh Statistics" to view current stats...
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Recent Events</h2>
+      <button onclick="refreshEvents()">Refresh Events</button>
+      <div id="events-display" class="stats-display">
+        Click "Refresh Events" to view recent events...
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Console Log</h2>
+      <button onclick="clearLog()">Clear Log</button>
+      <div id="log" class="log"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createPinia } from 'https://unpkg.com/pinia@2.1.7/dist/pinia.esm-browser.js';
+    import { createApp } from 'https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js';
+    
+    // Create Vue app with Pinia
+    const pinia = createPinia();
+    const app = createApp({});
+    app.use(pinia);
+    app.mount('#app-placeholder');
+    
+    // Import store
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js';
+    
+    const store = useAdvancedHauntingStore();
+    
+    // Initialize store
+    store.initialize();
+    
+    // Logging utility
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
+    }
+    
+    // Make functions globally available
+    window.increasePossession = (amount) => {
+      store.increasePossession(amount);
+      log(`Increased possession by ${amount}. New level: ${store.possessionLevel}`, 'success');
+      refreshStats();
+    };
+    
+    window.decreasePossession = (amount) => {
+      store.decreasePossession(amount);
+      log(`Decreased possession by ${amount}. New level: ${store.possessionLevel}`, 'success');
+      refreshStats();
+    };
+    
+    window.setPossession = (level) => {
+      store.setPossessionLevel(level);
+      log(`Set possession level to ${level}`, 'info');
+      refreshStats();
+    };
+    
+    window.recordCustomEvent = (eventType) => {
+      store.recordEvent(eventType, { 
+        test: true, 
+        timestamp: Date.now(),
+        randomValue: Math.random()
+      });
+      log(`Recorded custom event: ${eventType}`, 'success');
+      refreshEvents();
+    };
+    
+    window.simulateExorcism = () => {
+      store.statistics.exorcismsPerformed++;
+      store.decreasePossession(15);
+      store.recordEvent('exorcism_test', {
+        type: 'text',
+        reductionAmount: 15
+      });
+      log('Simulated exorcism (text)', 'success');
+      refreshStats();
+      refreshEvents();
+    };
+    
+    window.simulateJumpscare = () => {
+      const jumpscareId = `test_jumpscare_${Date.now()}`;
+      store.statistics.jumpscaresSeen.add(jumpscareId);
+      store.recordEvent('jumpscare_triggered', {
+        variantId: jumpscareId,
+        intensity: 5
+      });
+      log(`Simulated jumpscare: ${jumpscareId}`, 'success');
+      refreshStats();
+      refreshEvents();
+    };
+    
+    window.simulateAchievement = () => {
+      const achievementId = `test_achievement_${Date.now()}`;
+      store.achievements.add(achievementId);
+      store.statistics.achievementsUnlocked++;
+      store.recordEvent('achievement_unlocked', {
+        achievementId,
+        name: 'Test Achievement'
+      });
+      log(`Simulated achievement unlock: ${achievementId}`, 'success');
+      refreshStats();
+      refreshEvents();
+    };
+    
+    window.startNewSession = () => {
+      store.startSession();
+      log('Started new session', 'success');
+      refreshStats();
+    };
+    
+    window.endCurrentSession = () => {
+      store.endSession();
+      log('Ended current session', 'success');
+      refreshStats();
+    };
+    
+    window.simulateSessionTime = () => {
+      // Add 5 minutes to total time survived
+      store.statistics.totalTimeSurvived += 300000; // 5 minutes in ms
+      log('Added 5 minutes to total time survived', 'success');
+      refreshStats();
+    };
+    
+    window.saveProgress = () => {
+      store.saveToLocalStorage();
+      log('Progress saved to localStorage', 'success');
+    };
+    
+    window.loadProgress = () => {
+      const success = store.loadFromLocalStorage();
+      if (success) {
+        log('Progress loaded from localStorage', 'success');
+        refreshStats();
+        refreshEvents();
+      } else {
+        log('No saved progress found or load failed', 'error');
+      }
+    };
+    
+    window.clearProgress = () => {
+      if (confirm('Are you sure you want to clear all progress? This cannot be undone.')) {
+        store.clearProgress();
+        log('All progress cleared', 'error');
+        refreshStats();
+        refreshEvents();
+      }
+    };
+    
+    window.testQuotaExceeded = () => {
+      // Generate large events history to test compression
+      log('Generating large events history to test quota handling...', 'info');
+      for (let i = 0; i < 1000; i++) {
+        store.recordEvent('test_large_event', {
+          index: i,
+          data: 'x'.repeat(100)
+        });
+      }
+      log('Generated 1000 large events', 'info');
+      store.saveToLocalStorage();
+      log('Attempted save with large data', 'info');
+      refreshEvents();
+    };
+    
+    window.refreshStats = () => {
+      const stats = store.getStatistics();
+      const display = document.getElementById('stats-display');
+      
+      display.innerHTML = `
+<div class="stat-line"><span class="stat-label">Session Statistics:</span></div>
+<div class="stat-line">  Total Sessions: <span class="stat-value">${stats.totalSessions}</span></div>
+<div class="stat-line">  Current Session Duration: <span class="stat-value">${stats.currentSessionDuration}s</span></div>
+<div class="stat-line">  Total Time Survived: <span class="stat-value">${stats.totalTimeSurvivedFormatted}</span></div>
+
+<div class="stat-line"><span class="stat-label">Possession Statistics:</span></div>
+<div class="stat-line">  Current Level: <span class="stat-value">${stats.currentPossessionLevel}</span></div>
+<div class="stat-line">  Max Reached: <span class="stat-value">${stats.maxPossessionReached}</span></div>
+<div class="stat-line">  Total Increases: <span class="stat-value">${stats.totalPossessionIncreases}</span></div>
+<div class="stat-line">  Total Decreases: <span class="stat-value">${stats.totalPossessionDecreases}</span></div>
+
+<div class="stat-line"><span class="stat-label">Gameplay Statistics:</span></div>
+<div class="stat-line">  Exorcisms Performed: <span class="stat-value">${stats.exorcismsPerformed}</span></div>
+<div class="stat-line">  Jumpscares Seen: <span class="stat-value">${stats.jumpscaresSeen}</span></div>
+<div class="stat-line">  Achievements Unlocked: <span class="stat-value">${stats.achievementsUnlocked}</span></div>
+<div class="stat-line">  Easter Eggs Found: <span class="stat-value">${stats.easterEggsFound}</span></div>
+<div class="stat-line">  Endings Reached: <span class="stat-value">${stats.endingsReached.join(', ') || 'None'}</span></div>
+
+<div class="stat-line"><span class="stat-label">Current State:</span></div>
+<div class="stat-line">  Difficulty: <span class="stat-value">${stats.difficulty}</span></div>
+<div class="stat-line">  Ending Reached: <span class="stat-value">${stats.endingReached || 'None'}</span></div>
+      `;
+      
+      log('Statistics refreshed', 'info');
+    };
+    
+    window.refreshEvents = () => {
+      const stats = store.getStatistics();
+      const display = document.getElementById('events-display');
+      
+      if (stats.recentEvents.length === 0) {
+        display.innerHTML = '<div class="stat-line">No recent events</div>';
+        return;
+      }
+      
+      let html = '<div class="stat-line"><span class="stat-label">Last 10 Events:</span></div>';
+      
+      stats.recentEvents.forEach(event => {
+        html += `
+<div class="event-item">
+  <div><span class="event-type">${event.type}</span> <span class="event-time">${event.timestamp}</span></div>
+  <div style="color: #888; font-size: 12px;">${JSON.stringify(event.data)}</div>
+</div>
+        `;
+      });
+      
+      display.innerHTML = html;
+      log('Events refreshed', 'info');
+    };
+    
+    window.clearLog = () => {
+      document.getElementById('log').innerHTML = '';
+    };
+    
+    // Initial refresh
+    log('Statistics tracking test initialized', 'success');
+    refreshStats();
+    refreshEvents();
+  </script>
+  
+  <!-- Hidden app mount point for Pinia -->
+  <div id="app-placeholder" style="display: none;"></div>
+</body>
+</html>

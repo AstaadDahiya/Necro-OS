@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Difficulty Test</title>
+  <style>
+    body {
+      font-family: monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+    }
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .result {
+      background: #111;
+      border: 2px solid #0f0;
+      padding: 15px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Quick Difficulty Test</h1>
+  
+  <h2>Test Difficulty Rates</h2>
+  <button onclick="testRates()">Test All Rates</button>
+  <div id="rates-result" class="result"></div>
+  
+  <h2>Test Nightmare Initial</h2>
+  <button onclick="testNightmare()">Test Nightmare</button>
+  <div id="nightmare-result" class="result"></div>
+  
+  <h2>Show Selector</h2>
+  <button onclick="showSelector()">Show Difficulty Selector</button>
+  
+  <script type="module">
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js';
+    import { createPinia } from 'pinia';
+
+    const pinia = createPinia();
+    const store = useAdvancedHauntingStore(pinia);
+    window.store = store;
+
+    window.testRates = function() {
+      const tests = [
+        { mode: 'tourist', expected: 0.5 },
+        { mode: 'normal', expected: 1.5 },
+        { mode: 'nightmare', expected: 3.0 },
+        { mode: 'permadeath', expected: 1.5 }
+      ];
+      
+      let html = '<h3>Difficulty Rate Tests:</h3>';
+      tests.forEach(test => {
+        store.setDifficulty(test.mode);
+        const actual = store.possessionIncreaseRate;
+        const pass = actual === test.expected;
+        html += `<div>${test.mode}: ${actual} pts/min (expected ${test.expected}) ${pass ? '✓' : '✗'}</div>`;
+      });
+      
+      document.getElementById('rates-result').innerHTML = html;
+    };
+
+    window.testNightmare = function() {
+      store.setPossessionLevel(0);
+      store.setDifficulty('nightmare');
+      
+      const possession = store.possessionLevel;
+      const rate = store.possessionIncreaseRate;
+      
+      const html = `
+        <h3>Nightmare Mode Test:</h3>
+        <div>Initial Possession: ${possession} (expected 40) ${possession === 40 ? '✓' : '✗'}</div>
+        <div>Increase Rate: ${rate} pts/min (expected 3.0) ${rate === 3.0 ? '✓' : '✗'}</div>
+      `;
+      
+      document.getElementById('nightmare-result').innerHTML = html;
+    };
+
+    window.showSelector = function() {
+      window.dispatchEvent(new CustomEvent('show-difficulty-selector'));
+    };
+
+    console.log('Quick test ready');
+  </script>
+</body>
+</html>

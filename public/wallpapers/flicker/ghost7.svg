@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <rect width="1024" height="768" fill="#330000"/>
+  <text x="100" y="100" font-family="Courier" font-size="24" fill="#ff0000" opacity="0.4">
+    <tspan x="100" dy="30">C:\&gt; dir /s soul.exe</tspan>
+    <tspan x="100" dy="30">File not found</tspan>
+    <tspan x="100" dy="60">C:\&gt; tasklist | findstr ghost</tspan>
+    <tspan x="100" dy="30">ghost.exe         666    Console    1    13,666 K</tspan>
+    <tspan x="100" dy="30">haunt.exe        1313    Console    1    31,313 K</tspan>
+    <tspan x="100" dy="60">C:\&gt; ERROR: POSSESSION DETECTED</tspan>
+  </text>
+</svg>

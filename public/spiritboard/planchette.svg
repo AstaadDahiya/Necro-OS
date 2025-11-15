@@ -1,0 +1,54 @@
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Glow effect for planchette -->
+    <filter id="planchetteGlow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Gradient for wood texture -->
+    <radialGradient id="woodGradient" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#8b6f47;stop-opacity:0.7" />
+      <stop offset="100%" style="stop-color:#5c4a2f;stop-opacity:0.8" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Planchette body (teardrop/heart shape) -->
+  <path d="M 40 10 
+           C 20 10, 10 25, 10 40
+           C 10 55, 25 70, 40 75
+           C 55 70, 70 55, 70 40
+           C 70 25, 60 10, 40 10 Z"
+        fill="url(#woodGradient)"
+        stroke="#3a2f1f"
+        stroke-width="2"
+        filter="url(#planchetteGlow)"/>
+  
+  <!-- Center viewing hole -->
+  <circle cx="40" cy="40" r="12" fill="rgba(0,0,0,0.3)" stroke="#2a1f0f" stroke-width="2"/>
+  <circle cx="40" cy="40" r="8" fill="rgba(0,0,0,0.5)"/>
+  
+  <!-- Crosshairs in viewing hole -->
+  <line x1="40" y1="32" x2="40" y2="48" stroke="#d4af37" stroke-width="1" opacity="0.6"/>
+  <line x1="32" y1="40" x2="48" y2="40" stroke="#d4af37" stroke-width="1" opacity="0.6"/>
+  
+  <!-- Decorative details -->
+  <circle cx="40" cy="20" r="3" fill="#d4af37" opacity="0.4"/>
+  <circle cx="25" cy="35" r="2" fill="#d4af37" opacity="0.4"/>
+  <circle cx="55" cy="35" r="2" fill="#d4af37" opacity="0.4"/>
+  
+  <!-- Wood grain texture lines -->
+  <path d="M 20 30 Q 30 32, 40 30 T 60 30" 
+        stroke="#4a3a1f" 
+        stroke-width="1" 
+        fill="none" 
+        opacity="0.3"/>
+  <path d="M 25 45 Q 35 47, 45 45 T 65 45" 
+        stroke="#4a3a1f" 
+        stroke-width="1" 
+        fill="none" 
+        opacity="0.3"/>
+</svg>

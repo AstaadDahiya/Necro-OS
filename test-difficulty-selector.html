@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Difficulty Selector Test - NecroOS</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #f00;
+      text-align: center;
+      text-shadow: 0 0 10px #f00;
+    }
+    
+    .test-section {
+      background: #111;
+      border: 2px solid #0f0;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    
+    .test-section h2 {
+      color: #0ff;
+      margin-top: 0;
+    }
+    
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      border-radius: 3px;
+    }
+    
+    button:hover {
+      background: #0ff;
+    }
+    
+    button:active {
+      background: #ff0;
+    }
+    
+    .info {
+      background: #222;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 4px solid #0ff;
+    }
+    
+    .success {
+      color: #0f0;
+      font-weight: bold;
+    }
+    
+    .error {
+      color: #f00;
+      font-weight: bold;
+    }
+    
+    .warning {
+      color: #ff0;
+      font-weight: bold;
+    }
+    
+    pre {
+      background: #000;
+      border: 1px solid #333;
+      padding: 10px;
+      overflow-x: auto;
+      color: #0f0;
+    }
+    
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+      margin: 15px 0;
+    }
+    
+    .status-item {
+      background: #1a1a1a;
+      padding: 15px;
+      border: 1px solid #333;
+      border-radius: 5px;
+    }
+    
+    .status-label {
+      color: #888;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    
+    .status-value {
+      color: #0ff;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎮 Difficulty Selector Test Suite 🎮</h1>
+  
+  <div class="info">
+    <strong>Test Purpose:</strong> Verify difficulty selector component, difficulty modes, and persistence
+    <br><br>
+    <strong>Requirements Tested:</strong> 5.1, 5.2, 5.3, 5.4, 5.5, 5.6
+  </div>
+
+  <!-- Current State -->
+  <div class="test-section">
+    <h2>📊 Current State</h2>
+    <div class="status-grid">
+      <div class="status-item">
+        <div class="status-label">Difficulty Mode</div>
+        <div class="status-value" id="current-difficulty">-</div>
+      </div>
+      <div class="status-item">
+        <div class="status-label">Possession Level</div>
+        <div class="status-value" id="current-possession">-</div>
+      </div>
+      <div class="status-item">
+        <div class="status-label">Increase Rate (pts/min)</div>
+        <div class="status-value" id="increase-rate">-</div>
+      </div>
+      <div class="status-item">
+        <div class="status-label">Difficulty Selected</div>
+        <div class="status-value" id="difficulty-selected">-</div>
+      </div>
+    </div>
+    <button onclick="updateCurrentState()">🔄 Refresh State</button>
+  </div>
+
+  <!-- Test 1: Show Difficulty Selector -->
+  <div class="test-section">
+    <h2>Test 1: Show Difficulty Selector</h2>
+    <p>Manually trigger the difficulty selector modal</p>
+    <button onclick="showDifficultySelector()">Show Selector</button>
+    <div id="test1-result" class="info" style="margin-top: 10px;"></div>
+  </div>
+
+  <!-- Test 2: Difficulty Modes -->
+  <div class="test-section">
+    <h2>Test 2: Difficulty Modes</h2>
+    <p>Test each difficulty mode and verify settings</p>
+    <button onclick="testDifficulty('tourist')">Tourist Mode (0.5 pts/min)</button>
+    <button onclick="testDifficulty('normal')">Normal Mode (1.5 pts/min)</button>
+    <button onclick="testDifficulty('nightmare')">Nightmare Mode (40 start, 3 pts/min)</button>
+    <button onclick="testDifficulty('permadeath')">Permadeath Mode (1.5 pts/min)</button>
+    <div id="test2-result" class="info" style="margin-top: 10px;"></div>
+  </div>
+
+  <!-- Test 3: Persistence -->
+  <div class="test-section">
+    <h2>Test 3: Persistence</h2>
+    <p>Test localStorage persistence of difficulty selection</p>
+    <button onclick="checkPersistence()">Check Saved Data</button>
+    <button onclick="clearAllData()">Clear All Data</button>
+    <div id="test3-result" class="info" style="margin-top: 10px;"></div>
+  </div>
+
+  <!-- Test 4: First Launch Detection -->
+  <div class="test-section">
+    <h2>Test 4: First Launch Detection</h2>
+    <p>Test if selector shows on first launch</p>
+    <button onclick="simulateFirstLaunch()">Simulate First Launch</button>
+    <button onclick="simulateReturningUser()">Simulate Returning User</button>
+    <div id="test4-result" class="info" style="margin-top: 10px;"></div>
+  </div>
+
+  <!-- Test 5: Nightmare Mode Initial Possession -->
+  <div class="test-section">
+    <h2>Test 5: Nightmare Mode Initial Possession</h2>
+    <p>Verify Nightmare mode starts at 40% possession</p>
+    <button onclick="testNightmareInitial()">Test Nightmare Initial State</button>
+    <div id="test5-result" class="info" style="margin-top: 10px;"></div>
+  </div>
+
+  <!-- Test 6: Permadeath BSOD -->
+  <div class="test-section">
+    <h2>Test 6: Permadeath BSOD Clear</h2>
+    <p>Test that BSOD clears progress in Permadeath mode</p>
+    <button onclick="testPermadeathBSOD()">Setup Permadeath & Trigger BSOD</button>
+    <div id="test6-result" class="info" style="margin-top: 10px;"></div>
+    <div class="warning" style="margin-top: 10px;">
+      ⚠️ Note: This will trigger a BSOD. Type "restart" to dismiss it.
+    </div>
+  </div>
+
+  <!-- Test 7: Difficulty Multipliers -->
+  <div class="test-section">
+    <h2>Test 7: Difficulty Multipliers</h2>
+    <p>Verify correct multipliers for each difficulty</p>
+    <button onclick="testMultipliers()">Test All Multipliers</button>
+    <div id="test7-result" class="info" style="margin-top: 10px;"></div>
+  </div>
+
+  <!-- Console Log -->
+  <div class="test-section">
+    <h2>📝 Console Log</h2>
+    <pre id="console-log"></pre>
+    <button onclick="clearConsoleLog()">Clear Log</button>
+  </div>
+
+  <script type="module">
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js';
+    import { createPinia } from 'pinia';
+
+    // Initialize Pinia
+    const pinia = createPinia();
+    const advancedHaunting = useAdvancedHauntingStore(pinia);
+
+    // Make store available globally for tests
+    window.advancedHaunting = advancedHaunting;
+
+    // Console logging
+    const consoleLog = [];
+    const originalLog = console.log;
+    console.log = function(...args) {
+      originalLog.apply(console, args);
+      const message = args.map(arg => 
+        typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
+      ).join(' ');
+      consoleLog.push(`[${new Date().toLocaleTimeString()}] ${message}`);
+      updateConsoleLog();
+    };
+
+    window.updateConsoleLog = function() {
+      const logElement = document.getElementById('console-log');
+      logElement.textContent = consoleLog.slice(-20).join('\n');
+      logElement.scrollTop = logElement.scrollHeight;
+    };
+
+    window.clearConsoleLog = function() {
+      consoleLog.length = 0;
+      updateConsoleLog();
+    };
+
+    // Helper to display results
+    window.displayResult = function(elementId, message, type = 'info') {
+      const element = document.getElementById(elementId);
+      const className = type === 'success' ? 'success' : type === 'error' ? 'error' : type === 'warning' ? 'warning' : '';
+      element.innerHTML = `<span class="${className}">${message}</span>`;
+    };
+
+    // Update current state
+    window.updateCurrentState = function() {
+      const difficulty = advancedHaunting.difficulty;
+      const possession = advancedHaunting.possessionLevel;
+      const rate = advancedHaunting.possessionIncreaseRate;
+      const selected = localStorage.getItem('necro-os-difficulty-selected');
+
+      document.getElementById('current-difficulty').textContent = difficulty;
+      document.getElementById('current-possession').textContent = possession;
+      document.getElementById('increase-rate').textContent = rate;
+      document.getElementById('difficulty-selected').textContent = selected || 'false';
+
+      console.log('State updated:', { difficulty, possession, rate, selected });
+    };
+
+    // Test 1: Show difficulty selector
+    window.showDifficultySelector = function() {
+      console.log('Triggering difficulty selector...');
+      window.dispatchEvent(new CustomEvent('show-difficulty-selector'));
+      displayResult('test1-result', '✓ Difficulty selector triggered. Check if modal appeared.', 'success');
+    };
+
+    // Test 2: Test difficulty modes
+    window.testDifficulty = function(mode) {
+      console.log(`Testing ${mode} mode...`);
+      
+      // Reset possession to 0 first
+      advancedHaunting.setPossessionLevel(0);
+      
+      // Set difficulty
+      advancedHaunting.setDifficulty(mode);
+      
+      // Get expected values
+      const expectedRates = {
+        tourist: 0.5,
+        normal: 1.5,
+        nightmare: 3.0,
+        permadeath: 1.5
+      };
+      
+      const actualRate = advancedHaunting.possessionIncreaseRate;
+      const actualPossession = advancedHaunting.possessionLevel;
+      const expectedRate = expectedRates[mode];
+      const expectedPossession = mode === 'nightmare' ? 40 : 0;
+      
+      const rateMatch = actualRate === expectedRate;
+      const possessionMatch = actualPossession === expectedPossession;
+      
+      const result = `
+        Mode: ${mode}
+        Rate: ${actualRate} (expected: ${expectedRate}) ${rateMatch ? '✓' : '✗'}
+        Initial Possession: ${actualPossession} (expected: ${expectedPossession}) ${possessionMatch ? '✓' : '✗'}
+      `;
+      
+      displayResult('test2-result', result, rateMatch && possessionMatch ? 'success' : 'error');
+      updateCurrentState();
+    };
+
+    // Test 3: Check persistence
+    window.checkPersistence = function() {
+      console.log('Checking persistence...');
+      
+      const savedData = localStorage.getItem('necro-os-advanced-haunting');
+      const difficultySelected = localStorage.getItem('necro-os-difficulty-selected');
+      
+      if (savedData) {
+        const data = JSON.parse(savedData);
+        const result = `
+          ✓ Saved data found
+          Difficulty: ${data.difficulty}
+          Possession: ${data.possessionLevel}
+          Difficulty Selected Flag: ${difficultySelected}
+        `;
+        displayResult('test3-result', result, 'success');
+      } else {
+        displayResult('test3-result', '✗ No saved data found', 'warning');
+      }
+    };
+
+    window.clearAllData = function() {
+      console.log('Clearing all data...');
+      advancedHaunting.clearProgress();
+      localStorage.removeItem('necro-os-difficulty-selected');
+      displayResult('test3-result', '✓ All data cleared', 'success');
+      updateCurrentState();
+    };
+
+    // Test 4: First launch detection
+    window.simulateFirstLaunch = function() {
+      console.log('Simulating first launch...');
+      localStorage.removeItem('necro-os-difficulty-selected');
+      localStorage.removeItem('necro-os-advanced-haunting');
+      displayResult('test4-result', '✓ Cleared flags. Reload page to see selector on first launch.', 'success');
+    };
+
+    window.simulateReturningUser = function() {
+      console.log('Simulating returning user...');
+      localStorage.setItem('necro-os-difficulty-selected', 'true');
+      advancedHaunting.saveToLocalStorage();
+      displayResult('test4-result', '✓ Set flags. Reload page - selector should NOT appear.', 'success');
+    };
+
+    // Test 5: Nightmare initial possession
+    window.testNightmareInitial = function() {
+      console.log('Testing Nightmare mode initial possession...');
+      
+      // Clear and set to nightmare
+      advancedHaunting.setPossessionLevel(0);
+      advancedHaunting.setDifficulty('nightmare');
+      
+      const possession = advancedHaunting.possessionLevel;
+      const expected = 40;
+      const match = possession === expected;
+      
+      const result = `
+        Initial Possession: ${possession}
+        Expected: ${expected}
+        ${match ? '✓ PASS' : '✗ FAIL'}
+      `;
+      
+      displayResult('test5-result', result, match ? 'success' : 'error');
+      updateCurrentState();
+    };
+
+    // Test 6: Permadeath BSOD
+    window.testPermadeathBSOD = function() {
+      console.log('Testing Permadeath BSOD clear...');
+      
+      // Set to permadeath with some progress
+      advancedHaunting.setDifficulty('permadeath');
+      advancedHaunting.setPossessionLevel(50);
+      advancedHaunting.saveToLocalStorage();
+      
+      displayResult('test6-result', 
+        '✓ Set to Permadeath mode with 50% possession. Now triggering BSOD...\n' +
+        'After BSOD, check if progress was cleared.', 
+        'warning'
+      );
+      
+      // Trigger BSOD
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('trigger-bsod'));
+      }, 1000);
+    };
+
+    // Test 7: Test multipliers
+    window.testMultipliers = function() {
+      console.log('Testing difficulty multipliers...');
+      
+      const tests = [
+        { mode: 'tourist', expected: 0.5 },
+        { mode: 'normal', expected: 1.5 },
+        { mode: 'nightmare', expected: 3.0 },
+        { mode: 'permadeath', expected: 1.5 }
+      ];
+      
+      let results = '';
+      let allPass = true;
+      
+      tests.forEach(test => {
+        advancedHaunting.setDifficulty(test.mode);
+        const actual = advancedHaunting.difficultyMultiplier;
+        const pass = actual === test.expected;
+        allPass = allPass && pass;
+        
+        results += `${test.mode}: ${actual} (expected: ${test.expected}) ${pass ? '✓' : '✗'}\n`;
+      });
+      
+      displayResult('test7-result', results, allPass ? 'success' : 'error');
+    };
+
+    // Initialize
+    console.log('Difficulty Selector Test Suite initialized');
+    updateCurrentState();
+  </script>
+</body>
+</html>

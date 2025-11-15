@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whispers & Tension Audio Test - NecroOS</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #f00;
+      text-shadow: 0 0 10px #f00;
+    }
+    
+    .section {
+      background: #111;
+      border: 1px solid #0f0;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      border-radius: 3px;
+    }
+    
+    button:hover {
+      background: #0ff;
+    }
+    
+    button:disabled {
+      background: #555;
+      color: #888;
+      cursor: not-allowed;
+    }
+    
+    input {
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 8px;
+      font-family: 'Courier New', monospace;
+      margin: 5px;
+      width: 300px;
+    }
+    
+    .status {
+      color: #ff0;
+      margin: 10px 0;
+      padding: 10px;
+      background: #222;
+      border-left: 3px solid #ff0;
+    }
+    
+    .info {
+      color: #0ff;
+      font-size: 0.9em;
+      margin: 5px 0;
+    }
+    
+    .error {
+      color: #f00;
+      background: #300;
+      padding: 10px;
+      border-left: 3px solid #f00;
+      margin: 10px 0;
+    }
+    
+    .slider-container {
+      margin: 15px 0;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      margin: 10px 0;
+    }
+    
+    .value-display {
+      color: #ff0;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+  <h1>👻 Whispers & Tension Audio Layer Test</h1>
+  
+  <div class="section">
+    <h2>🎵 Audio System Status</h2>
+    <div id="status" class="status">Not initialized</div>
+    <button id="initBtn">Initialize Audio System</button>
+    <button id="resumeBtn" disabled>Resume Audio Context</button>
+  </div>
+
+  <div class="section">
+    <h2>👤 User Name Detection</h2>
+    <p class="info">Type your name to test whisper personalization (possession must be > 70)</p>
+    <input type="text" id="nameInput" placeholder="Enter your name..." />
+    <div id="detectedName" class="info">No name detected</div>
+  </div>
+
+  <div class="section">
+    <h2>🎚️ Possession Level Control</h2>
+    <div class="slider-container">
+      <label>Possession Level: <span id="possessionValue" class="value-display">0</span></label>
+      <input type="range" id="possessionSlider" min="0" max="100" value="0" />
+      <div class="info">
+        • Whispers trigger at level > 70 (with name detected)<br>
+        • Continuous heartbeat at level > 80
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>🗣️ Whispers Layer</h2>
+    <p class="info">Whispers play when possession > 70 and user name is detected</p>
+    <button id="playWhisperBtn" disabled>Play Whisper (Manual)</button>
+    <button id="stopWhisperBtn" disabled>Stop Whisper</button>
+    <div id="whisperStatus" class="info">Whisper layer inactive</div>
+  </div>
+
+  <div class="section">
+    <h2>💓 Tension Layer (Heartbeat)</h2>
+    <p class="info">Heartbeat builds tension before jumpscares and plays continuously at high possession</p>
+    
+    <h3>Jumpscare Heartbeat (60 → 140 BPM over 10s)</h3>
+    <button id="jumpscareHeartbeatBtn" disabled>Trigger Jumpscare Heartbeat</button>
+    
+    <h3>Continuous Heartbeat</h3>
+    <button id="startHeartbeatBtn" disabled>Start Heartbeat (60 BPM)</button>
+    <button id="heartbeat100Btn" disabled>Start Heartbeat (100 BPM)</button>
+    <button id="stopHeartbeatBtn" disabled>Stop Heartbeat</button>
+    
+    <h3>Tempo Adjustment</h3>
+    <button id="rampSlowBtn" disabled>Ramp to 80 BPM (5s)</button>
+    <button id="rampFastBtn" disabled>Ramp to 140 BPM (10s)</button>
+    
+    <div id="heartbeatStatus" class="info">Heartbeat inactive</div>
+  </div>
+
+  <div class="section">
+    <h2>📊 Layer States</h2>
+    <pre id="layerStates" style="color: #0ff; font-size: 0.9em;">Not initialized</pre>
+  </div>
+
+  <script type="module">
+    import { audioHauntingService } from './src/utils/audioHauntingService.js'
+
+    let initialized = false
+    let detectedName = null
+    let possessionLevel = 0
+
+    // Status updates
+    function updateStatus(message, isError = false) {
+      const statusEl = document.getElementById('status')
+      statusEl.textContent = message
+      statusEl.style.color = isError ? '#f00' : '#ff0'
+      console.log(message)
+    }
+
+    function updateLayerStates() {
+      const states = audioHauntingService.getAllLayersState()
+      document.getElementById('layerStates').textContent = JSON.stringify(states, null, 2)
+    }
+
+    // Initialize audio system
+    document.getElementById('initBtn').addEventListener('click', async () => {
+      try {
+        updateStatus('Initializing audio system...')
+        await audioHauntingService.initializeAudioLayers()
+        initialized = true
+        updateStatus('✓ Audio system initialized successfully')
+        
+        // Enable buttons
+        document.getElementById('resumeBtn').disabled = false
+        document.getElementById('playWhisperBtn').disabled = false
+        document.getElementById('stopWhisperBtn').disabled = false
+        document.getElementById('jumpscareHeartbeatBtn').disabled = false
+        document.getElementById('startHeartbeatBtn').disabled = false
+        document.getElementById('heartbeat100Btn').disabled = false
+        document.getElementById('stopHeartbeatBtn').disabled = false
+        document.getElementById('rampSlowBtn').disabled = false
+        document.getElementById('rampFastBtn').disabled = false
+        
+        updateLayerStates()
+      } catch (error) {
+        updateStatus('✗ Failed to initialize: ' + error.message, true)
+      }
+    })
+
+    // Resume audio context
+    document.getElementById('resumeBtn').addEventListener('click', async () => {
+      try {
+        await audioHauntingService.resume()
+        updateStatus('✓ Audio context resumed')
+      } catch (error) {
+        updateStatus('✗ Failed to resume: ' + error.message, true)
+      }
+    })
+
+    // User name detection
+    document.getElementById('nameInput').addEventListener('input', (e) => {
+      const value = e.target.value.trim()
+      if (value.length >= 2 && value.length <= 30) {
+        const letterCount = (value.match(/[a-zA-Z]/g) || []).length
+        const letterRatio = letterCount / value.length
+        
+        if (letterRatio > 0.7) {
+          detectedName = value
+          document.getElementById('detectedName').textContent = `✓ Detected name: ${value}`
+          document.getElementById('detectedName').style.color = '#0f0'
+        }
+      } else {
+        detectedName = null
+        document.getElementById('detectedName').textContent = 'No name detected'
+        document.getElementById('detectedName').style.color = '#888'
+      }
+    })
+
+    // Possession level slider
+    document.getElementById('possessionSlider').addEventListener('input', (e) => {
+      possessionLevel = parseInt(e.target.value)
+      document.getElementById('possessionValue').textContent = possessionLevel
+      
+      if (initialized) {
+        audioHauntingService.updateAudioForPossessionLevel(possessionLevel)
+        updateLayerStates()
+      }
+      
+      // Update whisper status
+      if (possessionLevel > 70 && detectedName) {
+        document.getElementById('whisperStatus').textContent = '✓ Whispers active (possession > 70, name detected)'
+        document.getElementById('whisperStatus').style.color = '#0f0'
+      } else {
+        document.getElementById('whisperStatus').textContent = 'Whispers inactive (need possession > 70 AND name)'
+        document.getElementById('whisperStatus').style.color = '#888'
+      }
+      
+      // Update heartbeat status
+      if (possessionLevel > 80) {
+        document.getElementById('heartbeatStatus').textContent = '✓ Continuous heartbeat should be active (possession > 80)'
+        document.getElementById('heartbeatStatus').style.color = '#0f0'
+      } else {
+        document.getElementById('heartbeatStatus').textContent = 'Continuous heartbeat inactive (need possession > 80)'
+        document.getElementById('heartbeatStatus').style.color = '#888'
+      }
+    })
+
+    // Whisper controls
+    document.getElementById('playWhisperBtn').addEventListener('click', async () => {
+      try {
+        await audioHauntingService.playWhisper(detectedName)
+        updateStatus('✓ Playing whisper')
+        setTimeout(updateLayerStates, 100)
+      } catch (error) {
+        updateStatus('✗ Failed to play whisper: ' + error.message, true)
+      }
+    })
+
+    document.getElementById('stopWhisperBtn').addEventListener('click', () => {
+      audioHauntingService.stopLayer('whispers')
+      updateStatus('✓ Stopped whisper')
+      updateLayerStates()
+    })
+
+    // Heartbeat controls
+    document.getElementById('jumpscareHeartbeatBtn').addEventListener('click', async () => {
+      try {
+        updateStatus('Starting jumpscare heartbeat sequence...')
+        
+        // Start at 60 BPM
+        await audioHauntingService.startHeartbeat(60)
+        updateStatus('✓ Heartbeat started at 60 BPM, ramping to 140 BPM...')
+        
+        // Ramp to 140 BPM over 10 seconds
+        audioHauntingService.adjustHeartbeatTempo(140, 10)
+        
+        setTimeout(updateLayerStates, 100)
+        
+        // Stop after 12 seconds (10s ramp + 2s buffer)
+        setTimeout(() => {
+          audioHauntingService.stopHeartbeat()
+          updateStatus('✓ Jumpscare heartbeat sequence complete')
+          updateLayerStates()
+        }, 12000)
+      } catch (error) {
+        updateStatus('✗ Failed jumpscare heartbeat: ' + error.message, true)
+      }
+    })
+
+    document.getElementById('startHeartbeatBtn').addEventListener('click', async () => {
+      try {
+        await audioHauntingService.startHeartbeat(60)
+        updateStatus('✓ Heartbeat started at 60 BPM')
+        setTimeout(updateLayerStates, 100)
+      } catch (error) {
+        updateStatus('✗ Failed to start heartbeat: ' + error.message, true)
+      }
+    })
+
+    document.getElementById('heartbeat100Btn').addEventListener('click', async () => {
+      try {
+        await audioHauntingService.startContinuousHeartbeat(100)
+        updateStatus('✓ Continuous heartbeat started at 100 BPM')
+        setTimeout(updateLayerStates, 100)
+      } catch (error) {
+        updateStatus('✗ Failed to start continuous heartbeat: ' + error.message, true)
+      }
+    })
+
+    document.getElementById('stopHeartbeatBtn').addEventListener('click', () => {
+      audioHauntingService.stopHeartbeat()
+      updateStatus('✓ Heartbeat stopped')
+      updateLayerStates()
+    })
+
+    document.getElementById('rampSlowBtn').addEventListener('click', () => {
+      audioHauntingService.adjustHeartbeatTempo(80, 5)
+      updateStatus('✓ Ramping to 80 BPM over 5 seconds')
+    })
+
+    document.getElementById('rampFastBtn').addEventListener('click', () => {
+      audioHauntingService.adjustHeartbeatTempo(140, 10)
+      updateStatus('✓ Ramping to 140 BPM over 10 seconds')
+    })
+
+    // Update layer states every 2 seconds
+    setInterval(() => {
+      if (initialized) {
+        updateLayerStates()
+      }
+    }, 2000)
+  </script>
+</body>
+</html>

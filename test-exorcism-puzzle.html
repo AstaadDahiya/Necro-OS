@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exorcism Puzzle Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #0a0a0a;
+      color: #00ff00;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #1a1a1a;
+      padding: 20px;
+      border: 2px solid #00ff00;
+      border-radius: 5px;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #ff6b6b;
+      text-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+    }
+    
+    .test-section {
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0, 255, 0, 0.05);
+      border: 1px solid #00ff00;
+      border-radius: 3px;
+    }
+    
+    .test-section h2 {
+      margin-top: 0;
+      color: #4ecdc4;
+    }
+    
+    button {
+      background: rgba(78, 205, 196, 0.2);
+      border: 2px solid #4ecdc4;
+      color: #4ecdc4;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      border-radius: 3px;
+      transition: all 0.2s ease;
+    }
+    
+    button:hover {
+      background: rgba(78, 205, 196, 0.4);
+      box-shadow: 0 0 10px rgba(78, 205, 196, 0.5);
+    }
+    
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      background: rgba(0, 0, 0, 0.5);
+      border-left: 3px solid #ffc107;
+      font-size: 14px;
+    }
+    
+    .success {
+      border-left-color: #4caf50;
+      color: #4caf50;
+    }
+    
+    .error {
+      border-left-color: #f44336;
+      color: #f44336;
+    }
+    
+    .info {
+      border-left-color: #4ecdc4;
+      color: #4ecdc4;
+    }
+    
+    input[type="text"] {
+      background: rgba(0, 0, 0, 0.5);
+      border: 2px solid #4ecdc4;
+      color: #4ecdc4;
+      padding: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      width: 300px;
+      border-radius: 3px;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+    
+    .stat-item {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 10px;
+      border-radius: 3px;
+      border: 1px solid #333;
+    }
+    
+    .stat-label {
+      color: #888;
+      font-size: 12px;
+    }
+    
+    .stat-value {
+      color: #4ecdc4;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🕯 Exorcism Puzzle Test 🕯</h1>
+    
+    <div class="test-section">
+      <h2>1. Text Exorcism Test</h2>
+      <p>Type "begone spirit" in the input field and click "Perform Text Exorcism"</p>
+      <input type="text" id="textInput" placeholder="Type exorcism phrase...">
+      <button onclick="testTextExorcism()">Perform Text Exorcism</button>
+      <div id="textResult" class="status info">Waiting for input...</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>2. Puzzle Exorcism Test</h2>
+      <p>Click to start a puzzle exorcism ritual</p>
+      <button onclick="startPuzzle('easy')">Start Easy Puzzle (4 symbols)</button>
+      <button onclick="startPuzzle('normal')">Start Normal Puzzle (4-6 symbols)</button>
+      <button onclick="startPuzzle('hard')">Start Hard Puzzle (6 symbols)</button>
+      <div id="puzzleResult" class="status info">Click a button to start puzzle...</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>3. Cooldown Test</h2>
+      <p>Test exorcism cooldown mechanics (120 seconds)</p>
+      <button onclick="checkCooldowns()">Check Cooldowns</button>
+      <div id="cooldownResult" class="status info">Click to check cooldowns...</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>4. Current Stats</h2>
+      <button onclick="updateStats()">Refresh Stats</button>
+      <div class="stats">
+        <div class="stat-item">
+          <div class="stat-label">Possession Level</div>
+          <div class="stat-value" id="possessionLevel">--</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Exorcisms Performed</div>
+          <div class="stat-value" id="exorcismsCount">--</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Text Cooldown</div>
+          <div class="stat-value" id="textCooldown">--</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">Puzzle Cooldown</div>
+          <div class="stat-value" id="puzzleCooldown">--</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>5. Manual Possession Control</h2>
+      <p>Adjust possession level for testing</p>
+      <button onclick="setPossession(0)">Set to 0</button>
+      <button onclick="setPossession(30)">Set to 30</button>
+      <button onclick="setPossession(50)">Set to 50</button>
+      <button onclick="setPossession(80)">Set to 80</button>
+      <button onclick="increasePossession(10)">+10</button>
+      <button onclick="increasePossession(20)">+20</button>
+    </div>
+  </div>
+
+  <script type="module">
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js'
+    import { gameplayService } from './src/utils/gameplayService.js'
+    import { createPinia } from 'pinia'
+    
+    // Initialize Pinia
+    const pinia = createPinia()
+    
+    // Make functions globally available
+    window.hauntingStore = useAdvancedHauntingStore(pinia)
+    window.gameplayService = gameplayService
+    
+    // Initialize stores
+    window.hauntingStore.initialize()
+    gameplayService.initialize()
+    
+    // Test functions
+    window.testTextExorcism = function() {
+      const input = document.getElementById('textInput')
+      const result = document.getElementById('textResult')
+      const phrase = input.value
+      
+      if (!phrase) {
+        result.className = 'status error'
+        result.textContent = 'Please enter a phrase'
+        return
+      }
+      
+      const success = gameplayService.performTextExorcism(phrase)
+      
+      if (success) {
+        result.className = 'status success'
+        result.textContent = `✓ Text exorcism successful! Possession reduced by 15 points. Flash effect triggered.`
+        input.value = ''
+      } else {
+        const cooldown = gameplayService.getRemainingCooldown('text')
+        if (cooldown > 0) {
+          result.className = 'status error'
+          result.textContent = `✗ Text exorcism on cooldown. Wait ${cooldown} seconds.`
+        } else {
+          result.className = 'status error'
+          result.textContent = `✗ Incorrect phrase. Try "begone spirit"`
+        }
+      }
+      
+      updateStats()
+    }
+    
+    window.startPuzzle = function(difficulty) {
+      const result = document.getElementById('puzzleResult')
+      
+      // Check cooldown first
+      const cooldown = gameplayService.getRemainingCooldown('puzzle')
+      if (cooldown > 0) {
+        result.className = 'status error'
+        result.textContent = `✗ Puzzle exorcism on cooldown. Wait ${cooldown} seconds.`
+        return
+      }
+      
+      // Dispatch event to start puzzle
+      window.dispatchEvent(new CustomEvent('start-exorcism-puzzle', {
+        detail: { difficulty }
+      }))
+      
+      result.className = 'status info'
+      result.textContent = `Puzzle started with difficulty: ${difficulty}. Complete the sequence!`
+    }
+    
+    window.checkCooldowns = function() {
+      const result = document.getElementById('cooldownResult')
+      const textCooldown = gameplayService.getRemainingCooldown('text')
+      const fileCooldown = gameplayService.getRemainingCooldown('file')
+      const puzzleCooldown = gameplayService.getRemainingCooldown('puzzle')
+      
+      result.className = 'status info'
+      result.innerHTML = `
+        Text Exorcism: ${textCooldown > 0 ? textCooldown + 's remaining' : 'Ready'}<br>
+        File Exorcism: ${fileCooldown > 0 ? fileCooldown + 's remaining' : 'Ready'}<br>
+        Puzzle Exorcism: ${puzzleCooldown > 0 ? puzzleCooldown + 's remaining' : 'Ready'}
+      `
+    }
+    
+    window.updateStats = function() {
+      const store = window.hauntingStore
+      
+      document.getElementById('possessionLevel').textContent = store.possessionLevel.toFixed(1)
+      document.getElementById('exorcismsCount').textContent = store.statistics.exorcismsPerformed
+      
+      const textCooldown = gameplayService.getRemainingCooldown('text')
+      const puzzleCooldown = gameplayService.getRemainingCooldown('puzzle')
+      
+      document.getElementById('textCooldown').textContent = textCooldown > 0 ? textCooldown + 's' : 'Ready'
+      document.getElementById('puzzleCooldown').textContent = puzzleCooldown > 0 ? puzzleCooldown + 's' : 'Ready'
+    }
+    
+    window.setPossession = function(level) {
+      window.hauntingStore.possessionLevel = level
+      updateStats()
+    }
+    
+    window.increasePossession = function(amount) {
+      window.hauntingStore.increasePossession(amount)
+      updateStats()
+    }
+    
+    // Listen for exorcism events
+    window.addEventListener('text-exorcism-performed', (e) => {
+      console.log('Text exorcism performed:', e.detail)
+      updateStats()
+    })
+    
+    window.addEventListener('puzzle-exorcism-performed', (e) => {
+      console.log('Puzzle exorcism performed:', e.detail)
+      const result = document.getElementById('puzzleResult')
+      result.className = 'status success'
+      result.textContent = `✓ Puzzle exorcism successful! Possession reduced by ${e.detail.reductionAmount} points.`
+      updateStats()
+    })
+    
+    // Initial stats update
+    updateStats()
+    
+    // Auto-refresh stats every 2 seconds
+    setInterval(updateStats, 2000)
+    
+    console.log('Exorcism Puzzle Test initialized')
+    console.log('Available symbols:', ['⛧', '☠', '👁', '🕯', '⚰', '🗡', '🔮', '💀', '👻', '🕷'])
+  </script>
+</body>
+</html>

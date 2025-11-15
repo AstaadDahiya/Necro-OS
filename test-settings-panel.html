@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings Panel Test - NecroOS</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      background: #008080;
+      padding: 20px;
+    }
+
+    .test-container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #000 #000 #fff;
+      padding: 20px;
+    }
+
+    h1 {
+      font-size: 16px;
+      margin-bottom: 20px;
+      color: #000080;
+    }
+
+    .test-section {
+      background: #fff;
+      border: 2px solid #808080;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+
+    .test-section h2 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #000080;
+    }
+
+    .test-button {
+      padding: 8px 16px;
+      font-size: 11px;
+      font-weight: bold;
+      font-family: 'MS Sans Serif', sans-serif;
+      background-color: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #000 #000 #fff;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+
+    .test-button:hover {
+      background-color: #d0d0d0;
+    }
+
+    .test-button:active {
+      border-color: #000 #fff #fff #000;
+      padding: 9px 15px 7px 17px;
+    }
+
+    .status {
+      padding: 10px;
+      margin-top: 10px;
+      background: #fffacd;
+      border: 1px solid #808080;
+      font-size: 11px;
+    }
+
+    .success {
+      background: #90ee90;
+    }
+
+    .error {
+      background: #ffcccb;
+    }
+
+    #app {
+      margin-top: 20px;
+      min-height: 600px;
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #000 #000 #fff;
+    }
+
+    .window {
+      position: relative;
+      width: 100%;
+      height: 600px;
+      background: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #000 #000 #fff;
+    }
+
+    .window-title {
+      background: linear-gradient(to right, #000080, #1084d0);
+      color: white;
+      padding: 4px 8px;
+      font-weight: bold;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .window-content {
+      height: calc(100% - 28px);
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>⚙️ Settings Panel Test</h1>
+
+    <div class="test-section">
+      <h2>Test Controls</h2>
+      <button class="test-button" onclick="openSettings()">Open Settings Panel</button>
+      <button class="test-button" onclick="testScareIntensity()">Test Scare Intensity</button>
+      <button class="test-button" onclick="testFeatureToggles()">Test Feature Toggles</button>
+      <button class="test-button" onclick="testThemeSelector()">Test Theme Selector</button>
+      <button class="test-button" onclick="testStatistics()">Test Statistics Display</button>
+      <button class="test-button" onclick="testResetProgress()">Test Reset Progress</button>
+      <div id="status" class="status"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Current Settings</h2>
+      <div id="current-settings" style="font-size: 11px; line-height: 1.6;"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>Settings Panel Preview</h2>
+      <div id="app">
+        <div class="window">
+          <div class="window-title">
+            <span>⚙️ Settings</span>
+          </div>
+          <div class="window-content" id="settings-container"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { createApp } from 'vue'
+    import { createPinia } from 'pinia'
+    import SettingsPanel from './src/components/SettingsPanel.vue'
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js'
+
+    // Create Vue app
+    const pinia = createPinia()
+    const app = createApp(SettingsPanel)
+    app.use(pinia)
+    app.mount('#settings-container')
+
+    // Get store instance
+    const advancedHaunting = useAdvancedHauntingStore()
+
+    // Initialize store with test data
+    advancedHaunting.possessionLevel = 45
+    advancedHaunting.statistics.totalSessions = 5
+    advancedHaunting.statistics.totalTimeSurvived = 3600000 // 1 hour
+    advancedHaunting.statistics.exorcismsPerformed = 12
+    advancedHaunting.statistics.jumpscaresSeen = new Set(['ghost', 'demon', 'doll'])
+    advancedHaunting.statistics.achievementsUnlocked = 2
+    advancedHaunting.statistics.easterEggsFound = 1
+    advancedHaunting.statistics.maxPossessionReached = 67
+
+    // Test functions
+    window.openSettings = function() {
+      updateStatus('Settings panel is now visible in the preview below', 'success')
+      updateCurrentSettings()
+    }
+
+    window.testScareIntensity = function() {
+      const intensity = advancedHaunting.customization.scareIntensity
+      updateStatus(`Current scare intensity: ${intensity}%. Try adjusting the slider in the settings panel.`, 'success')
+    }
+
+    window.testFeatureToggles = function() {
+      const enabled = Array.from(advancedHaunting.customization.enabledBehaviors)
+      updateStatus(`Enabled features: ${enabled.join(', ')}. Try toggling features in the settings panel.`, 'success')
+    }
+
+    window.testThemeSelector = function() {
+      const theme = advancedHaunting.customization.theme
+      updateStatus(`Current theme: ${theme}. Try selecting a different theme in the settings panel.`, 'success')
+      
+      // Show theme applied to body
+      setTimeout(() => {
+        const bodyClass = document.body.className
+        updateStatus(`Theme applied to body: ${bodyClass || 'none'}`, 'success')
+      }, 500)
+    }
+
+    window.testStatistics = function() {
+      const stats = advancedHaunting.getStatistics()
+      updateStatus(`Statistics loaded: ${stats.totalSessions} sessions, ${stats.totalTimeSurvivedFormatted} survived`, 'success')
+    }
+
+    window.testResetProgress = function() {
+      updateStatus('Click the "Reset All Progress" button in the settings panel and confirm to test reset functionality', 'success')
+    }
+
+    function updateStatus(message, type = '') {
+      const statusEl = document.getElementById('status')
+      statusEl.textContent = message
+      statusEl.className = 'status ' + type
+    }
+
+    function updateCurrentSettings() {
+      const settings = advancedHaunting.customization
+      const stats = advancedHaunting.getStatistics()
+      
+      const html = `
+        <strong>Scare Intensity:</strong> ${settings.scareIntensity}%<br>
+        <strong>Enabled Features:</strong> ${Array.from(settings.enabledBehaviors).join(', ')}<br>
+        <strong>Theme:</strong> ${settings.theme}<br>
+        <strong>Possession Level:</strong> ${stats.currentPossessionLevel}%<br>
+        <strong>Total Sessions:</strong> ${stats.totalSessions}<br>
+        <strong>Time Survived:</strong> ${stats.totalTimeSurvivedFormatted}
+      `
+      
+      document.getElementById('current-settings').innerHTML = html
+    }
+
+    // Update current settings every second
+    setInterval(updateCurrentSettings, 1000)
+    updateCurrentSettings()
+
+    // Initial status
+    updateStatus('Settings panel loaded. Use the test buttons above to verify functionality.', 'success')
+  </script>
+</body>
+</html>

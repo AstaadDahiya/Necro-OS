@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Command Prompt Test - NecroOS</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      background: #008080;
+    }
+    
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: white;
+      text-shadow: 2px 2px 0 #000;
+      margin-bottom: 20px;
+    }
+    
+    .test-section {
+      background: #c0c0c0;
+      border: 2px outset #fff;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    
+    .test-section h2 {
+      margin-top: 0;
+      font-size: 14px;
+      border-bottom: 1px solid #808080;
+      padding-bottom: 8px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+    
+    button {
+      background: #c0c0c0;
+      border: 2px outset #fff;
+      padding: 6px 16px;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    
+    button:active {
+      border-style: inset;
+    }
+    
+    .info {
+      background: #fff;
+      border: 2px inset #808080;
+      padding: 12px;
+      font-size: 11px;
+      margin-bottom: 16px;
+    }
+    
+    .command-prompt-container {
+      width: 100%;
+      height: 500px;
+      border: 2px outset #fff;
+      background: #000;
+    }
+    
+    .status {
+      margin-top: 10px;
+      padding: 8px;
+      background: #fff;
+      border: 2px inset #808080;
+      font-size: 11px;
+    }
+    
+    .status-label {
+      font-weight: bold;
+      margin-right: 8px;
+    }
+    
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+    }
+    
+    .checklist li {
+      padding: 4px 0;
+      font-size: 11px;
+    }
+    
+    .checklist li:before {
+      content: "☐ ";
+      margin-right: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>🖥️ Command Prompt Test</h1>
+    
+    <div class="test-section">
+      <h2>Test Instructions</h2>
+      <div class="info">
+        <strong>Purpose:</strong> Test the Command Prompt component with autonomous typing based on possession level.
+        <br><br>
+        <strong>Requirements Being Tested:</strong>
+        <ul>
+          <li>1.8: Autonomous typing when possession > 40 at 50-150ms per character</li>
+          <li>1.9: Display cryptic phrases from predefined set</li>
+        </ul>
+      </div>
+      
+      <div class="controls">
+        <button onclick="setPossessionLevel(0)">Set Possession: 0</button>
+        <button onclick="setPossessionLevel(20)">Set Possession: 20</button>
+        <button onclick="setPossessionLevel(40)">Set Possession: 40</button>
+        <button onclick="setPossessionLevel(60)">Set Possession: 60</button>
+        <button onclick="setPossessionLevel(80)">Set Possession: 80</button>
+        <button onclick="setPossessionLevel(100)">Set Possession: 100</button>
+      </div>
+      
+      <div class="status">
+        <span class="status-label">Current Possession Level:</span>
+        <span id="possessionLevel">0</span>
+        <br>
+        <span class="status-label">Autonomous Typing Active:</span>
+        <span id="autonomousStatus">No (possession ≤ 40)</span>
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Command Prompt Window</h2>
+      <div class="info">
+        <strong>Available Commands:</strong> HELP, DIR, CLS, VER, TIME, DATE, EXIT
+        <br>
+        <strong>Testing Checklist:</strong>
+        <ul class="checklist">
+          <li>Terminal-style interface displays correctly</li>
+          <li>Can type commands and press Enter to execute</li>
+          <li>Commands work correctly (try HELP, DIR, VER)</li>
+          <li>Command history works (Up/Down arrows)</li>
+          <li>When possession > 40, autonomous typing occurs</li>
+          <li>Autonomous messages appear in red with glow effect</li>
+          <li>Typing speed is 50-150ms per character</li>
+          <li>Cryptic phrases display correctly</li>
+          <li>Cursor blinks when not typing</li>
+          <li>Can click to focus input</li>
+        </ul>
+      </div>
+      
+      <div id="app" class="command-prompt-container"></div>
+    </div>
+  </div>
+  
+  <script type="module">
+    import { createApp } from 'vue'
+    import { createPinia } from 'pinia'
+    import CommandPrompt from './src/components/apps/CommandPrompt.vue'
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js'
+    
+    const pinia = createPinia()
+    const app = createApp(CommandPrompt)
+    app.use(pinia)
+    app.mount('#app')
+    
+    // Get store instance
+    const advancedHaunting = useAdvancedHauntingStore()
+    
+    // Make functions available globally
+    window.setPossessionLevel = (level) => {
+      advancedHaunting.currentPossessionLevel = level
+      document.getElementById('possessionLevel').textContent = level
+      
+      const autonomousActive = level > 40
+      document.getElementById('autonomousStatus').textContent = 
+        autonomousActive ? 'Yes (possession > 40)' : 'No (possession ≤ 40)'
+      
+      console.log(`Possession level set to ${level}`)
+      if (autonomousActive) {
+        console.log('Autonomous typing should start within 10-30 seconds')
+      }
+    }
+    
+    // Initialize
+    window.setPossessionLevel(0)
+  </script>
+</body>
+</html>

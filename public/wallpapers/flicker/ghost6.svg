@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <pattern id="static" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="2" height="2" fill="#ffffff" opacity="0.1"/>
+      <rect x="2" y="2" width="2" height="2" fill="#ffffff" opacity="0.1"/>
+    </pattern>
+  </defs>
+  <rect width="1024" height="768" fill="#000000"/>
+  <rect width="1024" height="768" fill="url(#static)"/>
+  <text x="512" y="384" font-family="Courier" font-size="48" fill="#ff0000" opacity="0.6" text-anchor="middle">SYSTEM CORRUPTED</text>
+</svg>

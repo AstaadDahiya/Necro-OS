@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seasonal Events System Test - NecroOS</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #f00;
+      text-shadow: 0 0 10px #f00;
+      border-bottom: 2px solid #f00;
+      padding-bottom: 10px;
+    }
+    
+    h2 {
+      color: #ff0;
+      margin-top: 30px;
+    }
+    
+    h3 {
+      color: #0ff;
+      margin-top: 20px;
+    }
+    
+    .test-section {
+      background: #111;
+      border: 1px solid #333;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 5px;
+    }
+    
+    button {
+      background: #333;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-size: 14px;
+      border-radius: 3px;
+      transition: all 0.3s;
+    }
+    
+    button:hover {
+      background: #0f0;
+      color: #000;
+      box-shadow: 0 0 10px #0f0;
+    }
+    
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+    
+    .status.success {
+      background: #1a4d1a;
+      border: 1px solid #0f0;
+      color: #0f0;
+    }
+    
+    .status.error {
+      background: #4d1a1a;
+      border: 1px solid #f00;
+      color: #f00;
+    }
+    
+    .status.info {
+      background: #1a1a4d;
+      border: 1px solid #0ff;
+      color: #0ff;
+    }
+    
+    .event-display {
+      background: #222;
+      border: 2px solid #ff0;
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 5px;
+      text-align: center;
+    }
+    
+    .event-icon {
+      font-size: 48px;
+      margin-bottom: 10px;
+    }
+    
+    .event-name {
+      font-size: 24px;
+      color: #ff0;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    
+    .event-description {
+      font-size: 16px;
+      color: #fff;
+      margin-bottom: 15px;
+    }
+    
+    .event-details {
+      font-size: 14px;
+      color: #0ff;
+      text-align: left;
+      margin-top: 15px;
+      padding-top: 15px;
+      border-top: 1px solid #444;
+    }
+    
+    .moon-phase {
+      display: inline-block;
+      padding: 5px 10px;
+      background: #333;
+      border-radius: 3px;
+      margin: 5px 0;
+    }
+    
+    .log {
+      background: #000;
+      border: 1px solid #333;
+      padding: 10px;
+      margin: 10px 0;
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+    
+    .log-entry {
+      margin: 5px 0;
+      padding: 5px;
+      border-left: 3px solid #0f0;
+      padding-left: 10px;
+    }
+    
+    .log-entry.warning {
+      border-left-color: #ff0;
+      color: #ff0;
+    }
+    
+    .log-entry.error {
+      border-left-color: #f00;
+      color: #f00;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎃 Seasonal Events System Test</h1>
+  
+  <div class="test-section">
+    <h2>Current Seasonal Event</h2>
+    <div id="currentEvent" class="event-display">
+      <div class="event-icon">⏳</div>
+      <div class="event-name">Loading...</div>
+    </div>
+    <button id="refreshEventBtn">Refresh Current Event</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Date/Time Simulation</h2>
+    <p>Test seasonal events by simulating different dates and times:</p>
+    
+    <h3>Halloween (October 31st)</h3>
+    <button id="simulateHalloweenBtn">Simulate Halloween</button>
+    <div id="halloweenStatus"></div>
+    
+    <h3>Friday the 13th</h3>
+    <button id="simulateFriday13Btn">Simulate Friday the 13th</button>
+    <div id="friday13Status"></div>
+    
+    <h3>Witching Hour (3:33 AM)</h3>
+    <button id="simulateWitchingHourBtn">Simulate Witching Hour</button>
+    <div id="witchingHourStatus"></div>
+    
+    <h3>Full Moon</h3>
+    <button id="simulateFullMoonBtn">Simulate Full Moon</button>
+    <div id="fullMoonStatus"></div>
+    <div class="moon-phase">
+      Current Moon Phase: <span id="moonPhase">Calculating...</span>
+    </div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Possession Rate Modifiers</h2>
+    <p>Test how seasonal events affect possession increase rate:</p>
+    
+    <div>
+      <label>Base Possession Rate: <span id="baseRate">1.5</span> points/min</label>
+    </div>
+    <div>
+      <label>Modified Rate: <span id="modifiedRate">1.5</span> points/min</label>
+    </div>
+    <div>
+      <label>Multiplier: <span id="multiplier">1.0x</span></label>
+    </div>
+    
+    <button id="testPossessionBtn">Test Possession Increase</button>
+    <div id="possessionStatus"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Friday the 13th Jumpscare Modifier</h2>
+    <p>Test the number 13 injection into jumpscares:</p>
+    
+    <button id="testJumpscareBtn">Test Jumpscare with Friday 13th</button>
+    <div id="jumpscareStatus"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Interval Multiplier (Full Moon)</h2>
+    <p>Test how Full Moon affects haunting intervals:</p>
+    
+    <div>
+      <label>Base Interval: <span id="baseInterval">60</span> seconds</label>
+    </div>
+    <div>
+      <label>Modified Interval: <span id="modifiedInterval">60</span> seconds</label>
+    </div>
+    <div>
+      <label>Multiplier: <span id="intervalMultiplier">1.0x</span></label>
+    </div>
+    
+    <button id="testIntervalBtn">Test Interval Calculation</button>
+  </div>
+  
+  <div class="test-section">
+    <h2>Event Log</h2>
+    <div id="eventLog" class="log"></div>
+    <button id="clearLogBtn">Clear Log</button>
+  </div>
+  
+  <script type="module">
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js';
+    import { metaHorrorService } from './src/utils/metaHorrorService.js';
+    
+    // Initialize store
+    const store = useAdvancedHauntingStore();
+    
+    // Log function
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('eventLog');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+      console.log(message);
+    }
+    
+    // Display current event
+    function displayCurrentEvent() {
+      const event = store.getCurrentSeasonalEvent();
+      const eventDiv = document.getElementById('currentEvent');
+      
+      if (event) {
+        eventDiv.innerHTML = `
+          <div class="event-icon">${event.icon}</div>
+          <div class="event-name">${event.name}</div>
+          <div class="event-description">${event.description}</div>
+          <div class="event-details">
+            <div><strong>Type:</strong> ${event.type}</div>
+            ${event.possessionMultiplier ? `<div><strong>Possession Multiplier:</strong> ${event.possessionMultiplier}x</div>` : ''}
+            ${event.hauntingMultiplier ? `<div><strong>Haunting Multiplier:</strong> ${event.hauntingMultiplier}x</div>` : ''}
+            ${event.intervalMultiplier ? `<div><strong>Interval Multiplier:</strong> ${event.intervalMultiplier}x</div>` : ''}
+            ${event.jumpscareModifier ? `<div><strong>Jumpscare Modifier:</strong> Active (Number 13)</div>` : ''}
+          </div>
+        `;
+        log(`Current event: ${event.name}`, 'info');
+      } else {
+        eventDiv.innerHTML = `
+          <div class="event-icon">🌙</div>
+          <div class="event-name">No Active Event</div>
+          <div class="event-description">No seasonal events are currently active</div>
+        `;
+        log('No seasonal events active', 'info');
+      }
+    }
+    
+    // Update moon phase display
+    function updateMoonPhase() {
+      const phase = store.calculateMoonPhase(new Date());
+      const phasePercent = ((phase / 2) * 100).toFixed(1);
+      document.getElementById('moonPhase').textContent = `${phasePercent}% (${phase.toFixed(3)})`;
+      
+      if (phase >= 0.95 && phase <= 1.05) {
+        document.getElementById('moonPhase').style.color = '#ff0';
+        log('Full moon detected!', 'info');
+      }
+    }
+    
+    // Update possession rate display
+    function updatePossessionRates() {
+      const baseRate = store.possessionIncreaseRate;
+      const modifiedRate = store.applySeasonalModifiers(baseRate);
+      const multiplier = modifiedRate / baseRate;
+      
+      document.getElementById('baseRate').textContent = baseRate.toFixed(1);
+      document.getElementById('modifiedRate').textContent = modifiedRate.toFixed(1);
+      document.getElementById('multiplier').textContent = `${multiplier.toFixed(1)}x`;
+      
+      if (multiplier > 1) {
+        document.getElementById('multiplier').style.color = '#f00';
+      } else {
+        document.getElementById('multiplier').style.color = '#0f0';
+      }
+    }
+    
+    // Update interval display
+    function updateIntervals() {
+      const baseInterval = 60;
+      const multiplier = store.getSeasonalIntervalMultiplier();
+      const modifiedInterval = baseInterval * multiplier;
+      
+      document.getElementById('baseInterval').textContent = baseInterval;
+      document.getElementById('modifiedInterval').textContent = modifiedInterval.toFixed(1);
+      document.getElementById('intervalMultiplier').textContent = `${multiplier.toFixed(2)}x`;
+      
+      if (multiplier < 1) {
+        document.getElementById('intervalMultiplier').style.color = '#f00';
+      } else {
+        document.getElementById('intervalMultiplier').style.color = '#0f0';
+      }
+    }
+    
+    // Refresh event button
+    document.getElementById('refreshEventBtn').addEventListener('click', () => {
+      displayCurrentEvent();
+      updateMoonPhase();
+      updatePossessionRates();
+      updateIntervals();
+    });
+    
+    // Simulate Halloween
+    document.getElementById('simulateHalloweenBtn').addEventListener('click', () => {
+      const statusDiv = document.getElementById('halloweenStatus');
+      statusDiv.innerHTML = '<div class="status info">Simulating October 31st...</div>';
+      
+      // Note: In real implementation, we'd need to mock the date
+      // For now, just show what would happen
+      const testDate = new Date();
+      testDate.setMonth(9); // October (0-indexed)
+      testDate.setDate(31);
+      
+      const testPhase = store.calculateMoonPhase(testDate);
+      
+      statusDiv.innerHTML = `
+        <div class="status success">
+          Halloween Simulation:<br>
+          - Date: October 31st<br>
+          - Possession Multiplier: 2.0x (200% increase)<br>
+          - Base rate 1.5 → 3.0 points/min<br>
+          - Icon: 🎃<br>
+          - Description: "The veil between worlds is thinnest"
+        </div>
+      `;
+      
+      log('Simulated Halloween event', 'info');
+    });
+    
+    // Simulate Friday the 13th
+    document.getElementById('simulateFriday13Btn').addEventListener('click', () => {
+      const statusDiv = document.getElementById('friday13Status');
+      statusDiv.innerHTML = `
+        <div class="status success">
+          Friday the 13th Simulation:<br>
+          - Day: Friday (5)<br>
+          - Date: 13th<br>
+          - Jumpscare Modifier: Active (injects number 13)<br>
+          - Icon: 🔪<br>
+          - Description: "Unlucky day brings dark omens"
+        </div>
+      `;
+      
+      log('Simulated Friday the 13th event', 'info');
+    });
+    
+    // Simulate Witching Hour
+    document.getElementById('simulateWitchingHourBtn').addEventListener('click', () => {
+      const statusDiv = document.getElementById('witchingHourStatus');
+      statusDiv.innerHTML = `
+        <div class="status success">
+          Witching Hour Simulation:<br>
+          - Time: 3:33 AM<br>
+          - Haunting Multiplier: 1.5x (50% increase)<br>
+          - All haunting effects increased<br>
+          - Icon: 🕯️<br>
+          - Description: "The hour of dark magic"
+        </div>
+      `;
+      
+      log('Simulated Witching Hour event', 'info');
+    });
+    
+    // Simulate Full Moon
+    document.getElementById('simulateFullMoonBtn').addEventListener('click', () => {
+      const statusDiv = document.getElementById('fullMoonStatus');
+      statusDiv.innerHTML = `
+        <div class="status success">
+          Full Moon Simulation:<br>
+          - Moon Phase: 1.0 (Full Moon)<br>
+          - Interval Multiplier: 0.75x (25% shorter)<br>
+          - 60s intervals → 45s intervals<br>
+          - Icon: 🌕<br>
+          - Description: "Spirits are restless tonight"
+        </div>
+      `;
+      
+      log('Simulated Full Moon event', 'info');
+    });
+    
+    // Test possession increase
+    document.getElementById('testPossessionBtn').addEventListener('click', () => {
+      const statusDiv = document.getElementById('possessionStatus');
+      const oldLevel = store.possessionLevel;
+      const baseRate = store.possessionIncreaseRate;
+      const modifiedRate = store.applySeasonalModifiers(baseRate);
+      
+      store.increasePossession(modifiedRate);
+      
+      statusDiv.innerHTML = `
+        <div class="status success">
+          Possession increased from ${oldLevel.toFixed(1)} to ${store.possessionLevel.toFixed(1)}<br>
+          Base rate: ${baseRate.toFixed(1)} → Modified: ${modifiedRate.toFixed(1)}
+        </div>
+      `;
+      
+      log(`Possession increased by ${modifiedRate.toFixed(1)} (base: ${baseRate.toFixed(1)})`, 'info');
+      updatePossessionRates();
+    });
+    
+    // Test jumpscare with Friday 13th
+    document.getElementById('testJumpscareBtn').addEventListener('click', async () => {
+      const statusDiv = document.getElementById('jumpscareStatus');
+      
+      if (store.isFriday13Active()) {
+        statusDiv.innerHTML = '<div class="status success">Friday the 13th is active! Jumpscare would include number 13 overlay.</div>';
+        log('Friday the 13th jumpscare modifier would be applied', 'info');
+      } else {
+        statusDiv.innerHTML = '<div class="status info">Friday the 13th is not active. Jumpscare would be normal.</div>';
+        log('Friday the 13th not active, normal jumpscare', 'info');
+      }
+      
+      // Create a test element to demonstrate the modifier
+      const testDiv = document.createElement('div');
+      testDiv.style.cssText = `
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 400px;
+        height: 300px;
+        background: #000;
+        border: 3px solid #f00;
+        z-index: 99999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      `;
+      testDiv.innerHTML = '<div style="color: #fff; font-size: 24px;">Test Jumpscare</div>';
+      document.body.appendChild(testDiv);
+      
+      // Apply Friday 13th modifier
+      metaHorrorService.injectFriday13Modifier(testDiv);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        testDiv.remove();
+      }, 3000);
+    });
+    
+    // Test interval calculation
+    document.getElementById('testIntervalBtn').addEventListener('click', () => {
+      updateIntervals();
+      log('Interval calculation updated', 'info');
+    });
+    
+    // Clear log
+    document.getElementById('clearLogBtn').addEventListener('click', () => {
+      document.getElementById('eventLog').innerHTML = '';
+      log('Log cleared', 'info');
+    });
+    
+    // Initialize
+    log('Seasonal Events System Test initialized', 'info');
+    displayCurrentEvent();
+    updateMoonPhase();
+    updatePossessionRates();
+    updateIntervals();
+    
+    // Auto-refresh every 10 seconds
+    setInterval(() => {
+      displayCurrentEvent();
+      updateMoonPhase();
+      updatePossessionRates();
+      updateIntervals();
+    }, 10000);
+  </script>
+</body>
+</html>

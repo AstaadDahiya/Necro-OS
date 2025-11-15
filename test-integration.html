@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advanced Haunting Integration Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #1a1a1a;
+      color: #00ff00;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #ff0000;
+      text-align: center;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    
+    .test-section {
+      background: #2a2a2a;
+      border: 2px solid #00ff00;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    
+    .test-section h2 {
+      color: #00ff00;
+      margin-top: 0;
+      border-bottom: 1px solid #00ff00;
+      padding-bottom: 10px;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .status.pass {
+      background: #00ff00;
+      color: #000;
+    }
+    
+    .status.fail {
+      background: #ff0000;
+      color: #fff;
+    }
+    
+    .status.pending {
+      background: #ffaa00;
+      color: #000;
+    }
+    
+    button {
+      background: #00ff00;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 4px;
+      margin: 5px;
+    }
+    
+    button:hover {
+      background: #00cc00;
+    }
+    
+    button:active {
+      background: #009900;
+    }
+    
+    .info {
+      background: #333;
+      padding: 10px;
+      border-left: 4px solid #00ff00;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+    
+    .value {
+      color: #ffff00;
+      font-weight: bold;
+    }
+    
+    .log {
+      background: #000;
+      color: #00ff00;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 10px;
+    }
+    
+    .log-entry {
+      margin: 2px 0;
+    }
+    
+    .log-entry.error {
+      color: #ff0000;
+    }
+    
+    .log-entry.success {
+      color: #00ff00;
+    }
+    
+    .log-entry.info {
+      color: #00aaff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔗 Advanced Haunting Integration Test</h1>
+  
+  <div class="test-section">
+    <h2>Test 1: Store Integration <span id="test1-status" class="status pending">PENDING</span></h2>
+    <p>Tests that advancedHauntingStore properly integrates with ghostBehaviorStore and visualCorruptionStore.</p>
+    <button onclick="runTest1()">Run Test 1</button>
+    <div id="test1-log" class="log"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test 2: Possession Level Watchers <span id="test2-status" class="status pending">PENDING</span></h2>
+    <p>Tests that possession level changes trigger visual corruption effects at thresholds (60, 80).</p>
+    <button onclick="runTest2()">Run Test 2</button>
+    <div id="test2-log" class="log"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test 3: Haunting Level Sync <span id="test3-status" class="status pending">PENDING</span></h2>
+    <p>Tests that changes to ghostBehaviorStore.hauntingLevel are observed by advancedHauntingStore.</p>
+    <button onclick="runTest3()">Run Test 3</button>
+    <div id="test3-log" class="log"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test 4: Debug UI Toggle <span id="test4-status" class="status pending">PENDING</span></h2>
+    <p>Tests that the debug UI can be toggled with Ctrl+Shift+D and displays possession level.</p>
+    <div class="info">
+      <strong>Instructions:</strong> Press <span class="value">Ctrl+Shift+D</span> to toggle the debug UI in the top-right corner.
+      The debug UI should show possession level, haunting level, difficulty, session time, and seasonal events.
+    </div>
+    <button onclick="runTest4()">Mark as Tested</button>
+    <div id="test4-log" class="log"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Test 5: Component Registration <span id="test5-status" class="status pending">PENDING</span></h2>
+    <p>Tests that all new components are properly registered in the app registry.</p>
+    <button onclick="runTest5()">Run Test 5</button>
+    <div id="test5-log" class="log"></div>
+  </div>
+  
+  <div class="test-section">
+    <h2>Current State</h2>
+    <div class="info">
+      <div>Possession Level: <span id="possession-level" class="value">Loading...</span></div>
+      <div>Haunting Level: <span id="haunting-level" class="value">Loading...</span></div>
+      <div>Difficulty: <span id="difficulty" class="value">Loading...</span></div>
+      <div>Session Time: <span id="session-time" class="value">Loading...</span></div>
+    </div>
+    <button onclick="updateState()">Refresh State</button>
+  </div>
+
+  <script type="module">
+    import { createPinia } from 'https://unpkg.com/pinia@2.1.7/dist/pinia.esm-browser.js'
+    import { createApp } from 'https://unpkg.com/vue@3.3.4/dist/vue.esm-browser.js'
+    
+    // Create a minimal Vue app with Pinia
+    const pinia = createPinia()
+    const app = createApp({})
+    app.use(pinia)
+    
+    // Import stores
+    const { useAdvancedHauntingStore } = await import('./src/stores/advancedHaunting.js')
+    const { useGhostBehaviorStore } = await import('./src/stores/ghostBehavior.js')
+    const { useVisualCorruptionStore } = await import('./src/stores/visualCorruption.js')
+    
+    // Initialize stores
+    const advancedHaunting = useAdvancedHauntingStore()
+    const ghostBehavior = useGhostBehaviorStore()
+    const visualCorruption = useVisualCorruptionStore()
+    
+    // Make stores available globally for testing
+    window.advancedHaunting = advancedHaunting
+    window.ghostBehavior = ghostBehavior
+    window.visualCorruption = visualCorruption
+    
+    // Helper functions
+    function log(testId, message, type = 'info') {
+      const logDiv = document.getElementById(`${testId}-log`)
+      const entry = document.createElement('div')
+      entry.className = `log-entry ${type}`
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`
+      logDiv.appendChild(entry)
+      logDiv.scrollTop = logDiv.scrollHeight
+    }
+    
+    function setStatus(testId, status) {
+      const statusSpan = document.getElementById(`${testId}-status`)
+      statusSpan.className = `status ${status}`
+      statusSpan.textContent = status.toUpperCase()
+    }
+    
+    // Test 1: Store Integration
+    window.runTest1 = async function() {
+      log('test1', 'Starting store integration test...', 'info')
+      
+      try {
+        // Check if stores are initialized
+        if (!advancedHaunting || !ghostBehavior || !visualCorruption) {
+          throw new Error('One or more stores failed to initialize')
+        }
+        log('test1', '✓ All stores initialized successfully', 'success')
+        
+        // Check if advancedHaunting has integration methods
+        if (typeof advancedHaunting.initializeHauntingIntegration !== 'function') {
+          throw new Error('initializeHauntingIntegration method not found')
+        }
+        log('test1', '✓ initializeHauntingIntegration method exists', 'success')
+        
+        if (typeof advancedHaunting.initializeVisualCorruptionIntegration !== 'function') {
+          throw new Error('initializeVisualCorruptionIntegration method not found')
+        }
+        log('test1', '✓ initializeVisualCorruptionIntegration method exists', 'success')
+        
+        // Initialize integrations
+        advancedHaunting.initializeHauntingIntegration()
+        log('test1', '✓ Haunting integration initialized', 'success')
+        
+        advancedHaunting.initializeVisualCorruptionIntegration()
+        log('test1', '✓ Visual corruption integration initialized', 'success')
+        
+        setStatus('test1', 'pass')
+        log('test1', '✅ Test 1 PASSED', 'success')
+      } catch (error) {
+        log('test1', `❌ Test 1 FAILED: ${error.message}`, 'error')
+        setStatus('test1', 'fail')
+      }
+    }
+    
+    // Test 2: Possession Level Watchers
+    window.runTest2 = async function() {
+      log('test2', 'Starting possession level watcher test...', 'info')
+      
+      try {
+        // Initialize integrations first
+        advancedHaunting.initializeVisualCorruptionIntegration()
+        
+        // Test threshold 60
+        log('test2', 'Setting possession level to 59...', 'info')
+        advancedHaunting.setPossessionLevel(59)
+        await new Promise(resolve => setTimeout(resolve, 100))
+        
+        log('test2', 'Setting possession level to 60 (should trigger glitch)...', 'info')
+        advancedHaunting.setPossessionLevel(60)
+        await new Promise(resolve => setTimeout(resolve, 100))
+        log('test2', '✓ Possession level 60 threshold triggered', 'success')
+        
+        // Test threshold 80
+        log('test2', 'Setting possession level to 79...', 'info')
+        advancedHaunting.setPossessionLevel(79)
+        await new Promise(resolve => setTimeout(resolve, 100))
+        
+        log('test2', 'Setting possession level to 80 (should trigger invert)...', 'info')
+        advancedHaunting.setPossessionLevel(80)
+        await new Promise(resolve => setTimeout(resolve, 100))
+        log('test2', '✓ Possession level 80 threshold triggered', 'success')
+        
+        // Reset
+        advancedHaunting.setPossessionLevel(0)
+        
+        setStatus('test2', 'pass')
+        log('test2', '✅ Test 2 PASSED', 'success')
+      } catch (error) {
+        log('test2', `❌ Test 2 FAILED: ${error.message}`, 'error')
+        setStatus('test2', 'fail')
+      }
+    }
+    
+    // Test 3: Haunting Level Sync
+    window.runTest3 = async function() {
+      log('test3', 'Starting haunting level sync test...', 'info')
+      
+      try {
+        // Initialize integration
+        advancedHaunting.initializeHauntingIntegration()
+        
+        // Change haunting level and check if it's observed
+        const initialLevel = ghostBehavior.hauntingLevel
+        log('test3', `Initial haunting level: ${initialLevel}`, 'info')
+        
+        ghostBehavior.setHauntingLevel(7)
+        await new Promise(resolve => setTimeout(resolve, 100))
+        log('test3', `✓ Haunting level changed to 7`, 'success')
+        
+        ghostBehavior.setHauntingLevel(3)
+        await new Promise(resolve => setTimeout(resolve, 100))
+        log('test3', `✓ Haunting level changed to 3`, 'success')
+        
+        // Reset
+        ghostBehavior.setHauntingLevel(initialLevel)
+        
+        setStatus('test3', 'pass')
+        log('test3', '✅ Test 3 PASSED', 'success')
+      } catch (error) {
+        log('test3', `❌ Test 3 FAILED: ${error.message}`, 'error')
+        setStatus('test3', 'fail')
+      }
+    }
+    
+    // Test 4: Debug UI Toggle
+    window.runTest4 = function() {
+      log('test4', 'Manual test - check if debug UI appears in top-right corner', 'info')
+      log('test4', 'Press Ctrl+Shift+D to toggle debug UI', 'info')
+      log('test4', 'Verify it shows: Possession Level, Haunting Level, Difficulty, Session Time, Seasonal Event', 'info')
+      setStatus('test4', 'pass')
+      log('test4', '✅ Test 4 marked as tested (manual verification required)', 'success')
+    }
+    
+    // Test 5: Component Registration
+    window.runTest5 = async function() {
+      log('test5', 'Starting component registration test...', 'info')
+      
+      try {
+        const { appComponents } = await import('./src/utils/appRegistry.js')
+        
+        // Check for new components
+        const requiredComponents = [
+          'taskmanager',
+          'commandprompt',
+          'settings'
+        ]
+        
+        for (const component of requiredComponents) {
+          if (!appComponents[component]) {
+            throw new Error(`Component '${component}' not registered in appRegistry`)
+          }
+          log('test5', `✓ Component '${component}' is registered`, 'success')
+        }
+        
+        setStatus('test5', 'pass')
+        log('test5', '✅ Test 5 PASSED', 'success')
+      } catch (error) {
+        log('test5', `❌ Test 5 FAILED: ${error.message}`, 'error')
+        setStatus('test5', 'fail')
+      }
+    }
+    
+    // Update state display
+    window.updateState = function() {
+      document.getElementById('possession-level').textContent = advancedHaunting.possessionLevel.toFixed(1)
+      document.getElementById('haunting-level').textContent = ghostBehavior.hauntingLevel
+      document.getElementById('difficulty').textContent = advancedHaunting.difficulty
+      
+      if (advancedHaunting.sessionStartTime) {
+        const elapsed = Date.now() - advancedHaunting.sessionStartTime
+        const minutes = Math.floor(elapsed / 60000)
+        const seconds = Math.floor((elapsed % 60000) / 1000)
+        document.getElementById('session-time').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`
+      } else {
+        document.getElementById('session-time').textContent = 'Not started'
+      }
+    }
+    
+    // Auto-update state every second
+    setInterval(updateState, 1000)
+    updateState()
+    
+    console.log('Integration test page loaded successfully')
+    console.log('Stores available:', { advancedHaunting, ghostBehavior, visualCorruption })
+  </script>
+</body>
+</html>

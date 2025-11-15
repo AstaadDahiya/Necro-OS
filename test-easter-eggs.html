@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Easter Eggs System Test - NecroOS</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #ff0;
+      text-shadow: 0 0 10px #ff0;
+      border-bottom: 2px solid #ff0;
+      padding-bottom: 10px;
+    }
+    
+    h2 {
+      color: #0ff;
+      margin-top: 30px;
+    }
+    
+    .test-section {
+      background: #111;
+      border: 1px solid #0f0;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    
+    .test-item {
+      margin: 15px 0;
+      padding: 10px;
+      background: #222;
+      border-left: 3px solid #0f0;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+    
+    .status.pending {
+      background: #666;
+      color: #fff;
+    }
+    
+    .status.success {
+      background: #0f0;
+      color: #000;
+    }
+    
+    .status.error {
+      background: #f00;
+      color: #fff;
+    }
+    
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      cursor: pointer;
+      margin: 5px;
+      border-radius: 3px;
+    }
+    
+    button:hover {
+      background: #0ff;
+    }
+    
+    button:active {
+      background: #0a0;
+    }
+    
+    .info {
+      background: #003;
+      border: 1px solid #00f;
+      padding: 10px;
+      margin: 10px 0;
+      color: #0ff;
+    }
+    
+    .warning {
+      background: #330;
+      border: 1px solid #f90;
+      padding: 10px;
+      margin: 10px 0;
+      color: #ff0;
+    }
+    
+    .code {
+      background: #000;
+      border: 1px solid #666;
+      padding: 10px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      overflow-x: auto;
+    }
+    
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin: 20px 0;
+    }
+    
+    .stat-card {
+      background: #1a1a1a;
+      border: 1px solid #0f0;
+      padding: 15px;
+      border-radius: 5px;
+    }
+    
+    .stat-value {
+      font-size: 24px;
+      color: #0ff;
+      font-weight: bold;
+    }
+    
+    .stat-label {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+    }
+    
+    #clickTarget {
+      position: fixed;
+      left: 656px;
+      top: 656px;
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 0, 0, 0.3);
+      border: 2px solid #f00;
+      cursor: crosshair;
+      z-index: 10000;
+    }
+    
+    #clickTarget::before {
+      content: '666';
+      position: absolute;
+      top: -20px;
+      left: -10px;
+      color: #f00;
+      font-size: 12px;
+    }
+    
+    textarea {
+      width: 100%;
+      height: 100px;
+      background: #000;
+      color: #0f0;
+      border: 1px solid #0f0;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      resize: vertical;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎃 Easter Eggs System Test</h1>
+    
+    <div class="info">
+      <strong>Test Status:</strong> This page tests the Easter Eggs System implementation for NecroOS Advanced Haunting.
+      <br><strong>Requirements:</strong> 8.1, 8.2, 8.3, 8.4, 8.5, 8.6
+    </div>
+
+    <!-- Statistics -->
+    <h2>📊 Easter Egg Statistics</h2>
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="easterEggsFound">0</div>
+        <div class="stat-label">Easter Eggs Found</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalEasterEggs">4</div>
+        <div class="stat-label">Total Easter Eggs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="achievementStatus">Locked</div>
+        <div class="stat-label">Paranormal Investigator</div>
+      </div>
+    </div>
+
+    <!-- Test 1: Konami Code -->
+    <div class="test-section">
+      <h2>Test 1: Konami Code Easter Egg</h2>
+      <div class="test-item">
+        <strong>Requirement 8.1:</strong> Detect Konami code sequence (↑↑↓↓←→←→BA)
+        <span class="status pending" id="status-konami">PENDING</span>
+      </div>
+      
+      <div class="info">
+        <strong>Instructions:</strong>
+        <ol>
+          <li>Click in this window to focus it</li>
+          <li>Press the following keys in sequence: ↑ ↑ ↓ ↓ ← → ← → B A</li>
+          <li>Watch for "Ghost Mode" activation (invisible cursor)</li>
+          <li>Check for easter egg notification</li>
+        </ol>
+      </div>
+      
+      <div class="code">
+        <strong>Key Sequence:</strong> <span id="keySequence">[]</span>
+      </div>
+      
+      <button onclick="simulateKonamiCode()">Simulate Konami Code</button>
+      <button onclick="resetKeySequence()">Reset Sequence</button>
+    </div>
+
+    <!-- Test 2: Secret Phrase -->
+    <div class="test-section">
+      <h2>Test 2: Secret Phrase Easter Egg</h2>
+      <div class="test-item">
+        <strong>Requirement 8.2:</strong> Detect "help me" in Notepad and auto-append response
+        <span class="status pending" id="status-phrase">PENDING</span>
+      </div>
+      
+      <div class="info">
+        <strong>Instructions:</strong>
+        <ol>
+          <li>Type "help me" in the textarea below (simulates Notepad)</li>
+          <li>Wait 2 seconds for the creepy response to appear</li>
+          <li>Check for easter egg notification</li>
+        </ol>
+      </div>
+      
+      <textarea id="notepadSimulator" placeholder="Type 'help me' here..."></textarea>
+      
+      <button onclick="testSecretPhrase()">Test Secret Phrase</button>
+    </div>
+
+    <!-- Test 3: Secret Coordinate -->
+    <div class="test-section">
+      <h2>Test 3: Secret Coordinate Easter Egg</h2>
+      <div class="test-item">
+        <strong>Requirement 8.4:</strong> Detect triple-click at coordinates (666, 666)
+        <span class="status pending" id="status-coordinate">PENDING</span>
+      </div>
+      
+      <div class="info">
+        <strong>Instructions:</strong>
+        <ol>
+          <li>Click the red target box 3 times (it's positioned at 666, 666)</li>
+          <li>Watch for special jumpscare sequence</li>
+          <li>Check for easter egg notification</li>
+        </ol>
+      </div>
+      
+      <div class="warning">
+        <strong>Note:</strong> A red target box is positioned at coordinates (666, 666) for easy testing.
+      </div>
+      
+      <button onclick="simulateSecretCoordinate()">Simulate Secret Coordinate</button>
+    </div>
+
+    <!-- Test 4: Secret Wallpaper -->
+    <div class="test-section">
+      <h2>Test 4: Secret Wallpaper Easter Egg</h2>
+      <div class="test-item">
+        <strong>Requirement 8.3:</strong> Unlock secret wallpaper at possession level 66
+        <span class="status pending" id="status-wallpaper">PENDING</span>
+      </div>
+      
+      <div class="info">
+        <strong>Instructions:</strong>
+        <ol>
+          <li>Click the button below to set possession level to 66</li>
+          <li>Watch for wallpaper change and red tint overlay</li>
+          <li>Check for easter egg notification</li>
+        </ol>
+      </div>
+      
+      <div class="code">
+        <strong>Current Possession Level:</strong> <span id="possessionLevel">0</span>
+      </div>
+      
+      <button onclick="setPossessionTo66()">Set Possession to 66</button>
+      <button onclick="resetPossession()">Reset Possession</button>
+    </div>
+
+    <!-- Test 5: Achievement -->
+    <div class="test-section">
+      <h2>Test 5: Paranormal Investigator Achievement</h2>
+      <div class="test-item">
+        <strong>Requirement 8.6:</strong> Unlock achievement when all easter eggs discovered
+        <span class="status pending" id="status-achievement">PENDING</span>
+      </div>
+      
+      <div class="info">
+        <strong>Instructions:</strong>
+        <ol>
+          <li>Complete all 4 easter eggs above</li>
+          <li>Watch for achievement notification</li>
+          <li>Check statistics for achievement unlock</li>
+        </ol>
+      </div>
+      
+      <button onclick="checkAchievement()">Check Achievement Status</button>
+      <button onclick="unlockAllEasterEggs()">Unlock All Easter Eggs (Cheat)</button>
+    </div>
+
+    <!-- Test 6: Persistence -->
+    <div class="test-section">
+      <h2>Test 6: Easter Egg Persistence</h2>
+      <div class="test-item">
+        <strong>Requirement 8.5:</strong> Store discovered easter eggs in localStorage
+        <span class="status pending" id="status-persistence">PENDING</span>
+      </div>
+      
+      <div class="info">
+        <strong>Instructions:</strong>
+        <ol>
+          <li>Discover some easter eggs</li>
+          <li>Refresh the page</li>
+          <li>Check that discovered eggs are still marked as found</li>
+        </ol>
+      </div>
+      
+      <div class="code">
+        <strong>Discovered Easter Eggs:</strong>
+        <pre id="discoveredEggs">[]</pre>
+      </div>
+      
+      <button onclick="checkPersistence()">Check Persistence</button>
+      <button onclick="clearProgress()">Clear Progress</button>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="test-section">
+      <h2>🎮 Control Panel</h2>
+      <button onclick="runAllTests()">Run All Tests</button>
+      <button onclick="resetAllTests()">Reset All Tests</button>
+      <button onclick="showStatistics()">Show Statistics</button>
+      <button onclick="location.reload()">Refresh Page</button>
+    </div>
+  </div>
+
+  <!-- Click target for coordinate test -->
+  <div id="clickTarget" title="Click here 3 times for secret"></div>
+
+  <script type="module">
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js'
+    import { metaHorrorService } from './src/utils/metaHorrorService.js'
+    import { createPinia } from 'pinia'
+
+    // Initialize Pinia
+    const pinia = createPinia()
+    
+    // Create store instance
+    const advancedHaunting = useAdvancedHauntingStore(pinia)
+    
+    // Make available globally for testing
+    window.advancedHaunting = advancedHaunting
+    window.metaHorrorService = metaHorrorService
+
+    // Initialize the store
+    console.log('Initializing advanced haunting store...')
+    
+    // Load from localStorage
+    advancedHaunting.loadFromLocalStorage()
+    
+    // Setup easter egg detection
+    advancedHaunting.setupEasterEggDetection()
+    
+    console.log('Easter egg system initialized')
+
+    // Update statistics display
+    function updateStatistics() {
+      document.getElementById('easterEggsFound').textContent = advancedHaunting.discoveredEasterEggs.size
+      document.getElementById('possessionLevel').textContent = advancedHaunting.possessionLevel
+      
+      const hasAchievement = advancedHaunting.achievements.has('paranormal_investigator')
+      document.getElementById('achievementStatus').textContent = hasAchievement ? 'Unlocked ✓' : 'Locked'
+      document.getElementById('achievementStatus').style.color = hasAchievement ? '#0f0' : '#f00'
+      
+      // Update discovered eggs display
+      const eggs = Array.from(advancedHaunting.discoveredEasterEggs)
+      document.getElementById('discoveredEggs').textContent = JSON.stringify(eggs, null, 2)
+      
+      // Update test statuses
+      updateTestStatus('konami', advancedHaunting.discoveredEasterEggs.has('konami_code'))
+      updateTestStatus('phrase', advancedHaunting.discoveredEasterEggs.has('secret_phrase'))
+      updateTestStatus('coordinate', advancedHaunting.discoveredEasterEggs.has('secret_coordinate'))
+      updateTestStatus('wallpaper', advancedHaunting.discoveredEasterEggs.has('secret_wallpaper'))
+      updateTestStatus('achievement', hasAchievement)
+    }
+
+    function updateTestStatus(testName, success) {
+      const statusEl = document.getElementById(`status-${testName}`)
+      if (statusEl) {
+        statusEl.textContent = success ? 'SUCCESS' : 'PENDING'
+        statusEl.className = `status ${success ? 'success' : 'pending'}`
+      }
+    }
+
+    // Track key sequence
+    const keySequence = []
+    window.addEventListener('keydown', (e) => {
+      keySequence.push(e.key)
+      if (keySequence.length > 10) keySequence.shift()
+      document.getElementById('keySequence').textContent = JSON.stringify(keySequence)
+    })
+
+    // Test functions
+    window.simulateKonamiCode = function() {
+      const keys = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a']
+      keys.forEach((key, index) => {
+        setTimeout(() => {
+          const event = new KeyboardEvent('keydown', { key })
+          window.dispatchEvent(event)
+        }, index * 100)
+      })
+    }
+
+    window.resetKeySequence = function() {
+      keySequence.length = 0
+      document.getElementById('keySequence').textContent = '[]'
+    }
+
+    window.testSecretPhrase = async function() {
+      const textarea = document.getElementById('notepadSimulator')
+      textarea.value = 'help me'
+      
+      // Simulate the check
+      if (metaHorrorService.checkSecretPhrase(textarea.value)) {
+        advancedHaunting.discoverEasterEgg('secret_phrase')
+        
+        // Simulate auto-append
+        setTimeout(() => {
+          textarea.value += '\n\nNo one can help you now'
+          updateStatistics()
+        }, 2000)
+      }
+    }
+
+    window.simulateSecretCoordinate = function() {
+      // Simulate 3 clicks at (666, 666)
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          const event = new MouseEvent('click', {
+            clientX: 666,
+            clientY: 666,
+            bubbles: true
+          })
+          window.dispatchEvent(event)
+        }, i * 200)
+      }
+    }
+
+    window.setPossessionTo66 = function() {
+      advancedHaunting.setPossessionLevel(66)
+      updateStatistics()
+    }
+
+    window.resetPossession = function() {
+      advancedHaunting.setPossessionLevel(0)
+      updateStatistics()
+    }
+
+    window.checkAchievement = function() {
+      advancedHaunting.checkParanormalInvestigatorAchievement()
+      updateStatistics()
+    }
+
+    window.unlockAllEasterEggs = function() {
+      advancedHaunting.discoverEasterEgg('konami_code')
+      advancedHaunting.discoverEasterEgg('secret_phrase')
+      advancedHaunting.discoverEasterEgg('secret_coordinate')
+      advancedHaunting.discoverEasterEgg('secret_wallpaper')
+      updateStatistics()
+    }
+
+    window.checkPersistence = function() {
+      const saved = localStorage.getItem('necro-os-advanced-haunting')
+      if (saved) {
+        const data = JSON.parse(saved)
+        console.log('Saved data:', data)
+        alert('Easter eggs are persisted! Check console for details.')
+        updateTestStatus('persistence', true)
+      } else {
+        alert('No saved data found')
+      }
+    }
+
+    window.clearProgress = function() {
+      if (confirm('Clear all progress? This will reset all easter eggs and achievements.')) {
+        advancedHaunting.clearProgress()
+        updateStatistics()
+        location.reload()
+      }
+    }
+
+    window.runAllTests = function() {
+      alert('Running all tests... Watch for notifications!')
+      
+      setTimeout(() => simulateKonamiCode(), 1000)
+      setTimeout(() => testSecretPhrase(), 3000)
+      setTimeout(() => simulateSecretCoordinate(), 6000)
+      setTimeout(() => setPossessionTo66(), 9000)
+      setTimeout(() => checkAchievement(), 12000)
+    }
+
+    window.resetAllTests = function() {
+      if (confirm('Reset all test statuses?')) {
+        clearProgress()
+      }
+    }
+
+    window.showStatistics = function() {
+      const stats = advancedHaunting.getStatistics()
+      console.log('Statistics:', stats)
+      alert(`Easter Eggs Found: ${stats.easterEggsFound}\nAchievements: ${stats.achievementsUnlocked}\nCheck console for full details.`)
+    }
+
+    // Listen for easter egg discoveries
+    window.addEventListener('necro-achievement-unlocked', (e) => {
+      console.log('Achievement unlocked:', e.detail)
+      updateStatistics()
+    })
+
+    // Initial update
+    updateStatistics()
+    
+    // Update every second
+    setInterval(updateStatistics, 1000)
+
+    console.log('Test page ready!')
+  </script>
+</body>
+</html>

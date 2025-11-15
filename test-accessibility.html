@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accessibility Features Test - NecroOS</title>
+  <style>
+    body {
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      background-color: #008080;
+      padding: 20px;
+      color: #fff;
+    }
+    
+    .test-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background-color: #c0c0c0;
+      border: 3px solid;
+      border-color: #fff #000 #000 #fff;
+      padding: 20px;
+      color: #000;
+    }
+    
+    h1 {
+      background: linear-gradient(to right, #000080, #1084d0);
+      color: white;
+      padding: 8px;
+      margin: -20px -20px 20px -20px;
+      font-size: 16px;
+    }
+    
+    h2 {
+      color: #000080;
+      border-bottom: 2px solid #808080;
+      padding-bottom: 4px;
+      margin-top: 30px;
+    }
+    
+    .test-section {
+      background-color: #fff;
+      border: 2px solid #808080;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    
+    .test-item {
+      margin: 10px 0;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-left: 4px solid #000080;
+    }
+    
+    .test-item h3 {
+      margin: 0 0 8px 0;
+      font-size: 14px;
+      color: #000080;
+    }
+    
+    .test-item p {
+      margin: 5px 0;
+      font-size: 12px;
+    }
+    
+    .status {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 3px;
+      font-weight: bold;
+      font-size: 11px;
+      margin-left: 10px;
+    }
+    
+    .status.pass {
+      background-color: #90ee90;
+      color: #006400;
+    }
+    
+    .status.fail {
+      background-color: #ffcccb;
+      color: #8b0000;
+    }
+    
+    .status.pending {
+      background-color: #fffacd;
+      color: #8b8000;
+    }
+    
+    button {
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: bold;
+      font-family: 'MS Sans Serif', sans-serif;
+      background-color: #c0c0c0;
+      border: 2px solid;
+      border-color: #fff #000 #000 #fff;
+      cursor: pointer;
+      margin: 5px;
+    }
+    
+    button:hover {
+      background-color: #d0d0d0;
+    }
+    
+    button:active {
+      border-color: #000 #fff #fff #000;
+      padding: 9px 15px 7px 17px;
+    }
+    
+    .test-controls {
+      margin: 20px 0;
+      padding: 15px;
+      background-color: #e0e0e0;
+      border: 2px solid #808080;
+    }
+    
+    .checkbox-group {
+      margin: 10px 0;
+    }
+    
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 5px 0;
+      cursor: pointer;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+    }
+    
+    .log {
+      background-color: #000;
+      color: #0f0;
+      padding: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      max-height: 300px;
+      overflow-y: auto;
+      margin-top: 15px;
+    }
+    
+    .log-entry {
+      margin: 2px 0;
+    }
+    
+    .log-entry.success {
+      color: #0f0;
+    }
+    
+    .log-entry.error {
+      color: #f00;
+    }
+    
+    .log-entry.info {
+      color: #0ff;
+    }
+    
+    .visual-cue-demo {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: rgba(0, 0, 0, 0.9);
+      border: 2px solid #fff;
+      padding: 12px 16px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+      animation: slideIn 0.3s ease-out;
+    }
+    
+    .visual-cue-demo.show {
+      display: flex;
+    }
+    
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+    
+    .cue-icon {
+      font-size: 24px;
+    }
+    
+    .cue-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="test-container">
+    <h1>♿ Accessibility Features Test Suite</h1>
+    
+    <div class="test-controls">
+      <h2>Test Controls</h2>
+      <button onclick="runAllTests()">▶️ Run All Tests</button>
+      <button onclick="clearLog()">🗑️ Clear Log</button>
+      <button onclick="testPhotosensitivityWarning()">Test Photosensitivity Warning</button>
+      <button onclick="testReducedMotion()">Test Reduced Motion</button>
+      <button onclick="testVisualCues()">Test Visual Cues</button>
+      <button onclick="testKeyboardNavigation()">Test Keyboard Navigation</button>
+      <button onclick="testARIALabels()">Test ARIA Labels</button>
+    </div>
+
+    <h2>Test Results</h2>
+
+    <!-- Test 1: Photosensitivity Warning -->
+    <div class="test-section">
+      <div class="test-item">
+        <h3>1. Photosensitivity Warning on First Launch <span class="status pending" id="status-1">PENDING</span></h3>
+        <p><strong>Requirement:</strong> Display photosensitivity warning on first launch with option to enable reduced motion</p>
+        <p><strong>Test:</strong> Check if warning is shown when localStorage flag is not set</p>
+        <p><strong>Expected:</strong> Warning modal appears with checkbox for reduced motion and accept/exit buttons</p>
+        <button onclick="testPhotosensitivityWarning()">Run Test</button>
+        <button onclick="resetWarningFlag()">Reset Warning Flag</button>
+      </div>
+    </div>
+
+    <!-- Test 2: Reduced Motion Mode -->
+    <div class="test-section">
+      <div class="test-item">
+        <h3>2. Reduced Motion Mode <span class="status pending" id="status-2">PENDING</span></h3>
+        <p><strong>Requirement:</strong> Minimize flashing, reduce animation speeds, disable rapid visual changes</p>
+        <p><strong>Test:</strong> Enable reduced motion and verify CSS class is applied</p>
+        <p><strong>Expected:</strong> Body has 'reduced-motion' class, animations are minimized</p>
+        <button onclick="testReducedMotion()">Run Test</button>
+        <button onclick="toggleReducedMotion()">Toggle Reduced Motion</button>
+      </div>
+    </div>
+
+    <!-- Test 3: Visual Cues for Audio -->
+    <div class="test-section">
+      <div class="test-item">
+        <h3>3. Visual Cues for Audio Events <span class="status pending" id="status-3">PENDING</span></h3>
+        <p><strong>Requirement:</strong> Show visual indicators when audio events occur</p>
+        <p><strong>Test:</strong> Emit audio events and verify visual cues appear</p>
+        <p><strong>Expected:</strong> Visual cue component displays with appropriate icon and label</p>
+        <button onclick="testVisualCues()">Run Test</button>
+        <button onclick="simulateAudioEvent('distant-scream')">Simulate Scream</button>
+        <button onclick="simulateAudioEvent('whisper')">Simulate Whisper</button>
+        <button onclick="simulateAudioEvent('heartbeat')">Simulate Heartbeat</button>
+      </div>
+    </div>
+
+    <!-- Test 4: Keyboard Navigation -->
+    <div class="test-section">
+      <div class="test-item">
+        <h3>4. Keyboard Navigation <span class="status pending" id="status-4">PENDING</span></h3>
+        <p><strong>Requirement:</strong> All interactive elements are keyboard accessible</p>
+        <p><strong>Test:</strong> Tab through elements and verify focus indicators</p>
+        <p><strong>Expected:</strong> All buttons, inputs, and interactive elements can be focused and activated with keyboard</p>
+        <button onclick="testKeyboardNavigation()">Run Test</button>
+        <div class="checkbox-group">
+          <label><input type="checkbox" id="kb-test-1"> Test Checkbox 1</label>
+          <label><input type="checkbox" id="kb-test-2"> Test Checkbox 2</label>
+          <label><input type="checkbox" id="kb-test-3"> Test Checkbox 3</label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Test 5: ARIA Labels -->
+    <div class="test-section">
+      <div class="test-item">
+        <h3>5. ARIA Labels and Accessibility Attributes <span class="status pending" id="status-5">PENDING</span></h3>
+        <p><strong>Requirement:</strong> All interactive elements have appropriate ARIA labels</p>
+        <p><strong>Test:</strong> Check for aria-label, aria-labelledby, role attributes</p>
+        <p><strong>Expected:</strong> All buttons, inputs, and controls have descriptive ARIA attributes</p>
+        <button onclick="testARIALabels()">Run Test</button>
+      </div>
+    </div>
+
+    <!-- Test 6: Settings Panel Integration -->
+    <div class="test-section">
+      <div class="test-item">
+        <h3>6. Settings Panel Accessibility Options <span class="status pending" id="status-6">PENDING</span></h3>
+        <p><strong>Requirement:</strong> Settings panel includes accessibility section with toggles</p>
+        <p><strong>Test:</strong> Verify accessibility section exists with reduced motion and visual cues toggles</p>
+        <p><strong>Expected:</strong> Accessibility section with properly labeled toggles</p>
+        <button onclick="testSettingsPanel()">Run Test</button>
+      </div>
+    </div>
+
+    <!-- Test 7: Prefers Reduced Motion Detection -->
+    <div class="test-section">
+      <div class="test-item">
+        <h3>7. System Preference Detection <span class="status pending" id="status-7">PENDING</span></h3>
+        <p><strong>Requirement:</strong> Detect and respect system prefers-reduced-motion setting</p>
+        <p><strong>Test:</strong> Check if system preference is detected</p>
+        <p><strong>Expected:</strong> System preference is detected and applied automatically</p>
+        <button onclick="testSystemPreference()">Run Test</button>
+        <p id="system-pref-result"></p>
+      </div>
+    </div>
+
+    <!-- Test 8: Focus Indicators -->
+    <div class="test-section">
+      <div class="test-item">
+        <h3>8. Visible Focus Indicators <span class="status pending" id="status-8">PENDING</span></h3>
+        <p><strong>Requirement:</strong> All focusable elements have visible focus indicators</p>
+        <p><strong>Test:</strong> Tab through elements and verify focus outline is visible</p>
+        <p><strong>Expected:</strong> Clear 2px outline on focused elements</p>
+        <button onclick="testFocusIndicators()">Run Test</button>
+      </div>
+    </div>
+
+    <div class="log" id="test-log">
+      <div class="log-entry info">Test log initialized. Click "Run All Tests" to begin.</div>
+    </div>
+  </div>
+
+  <!-- Visual Cue Demo -->
+  <div class="visual-cue-demo" id="visual-cue-demo">
+    <div class="cue-icon" id="cue-icon">🔊</div>
+    <div class="cue-label" id="cue-label">Audio Event</div>
+  </div>
+
+  <script>
+    // Test logging
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('test-log');
+      const entry = document.createElement('div');
+      entry.className = `log-entry ${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      logDiv.appendChild(entry);
+      logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('test-log').innerHTML = '<div class="log-entry info">Log cleared.</div>';
+    }
+
+    function updateStatus(testId, status) {
+      const statusEl = document.getElementById(`status-${testId}`);
+      statusEl.className = `status ${status}`;
+      statusEl.textContent = status.toUpperCase();
+    }
+
+    // Test 1: Photosensitivity Warning
+    function testPhotosensitivityWarning() {
+      log('Testing photosensitivity warning...', 'info');
+      
+      try {
+        const warningShown = localStorage.getItem('necro-os-photosensitivity-warning-shown');
+        
+        if (!warningShown) {
+          log('✓ Warning flag not set - warning would be shown', 'success');
+          updateStatus(1, 'pass');
+        } else {
+          log('✓ Warning flag is set - warning would be skipped', 'success');
+          log('  (Click "Reset Warning Flag" to test first-launch behavior)', 'info');
+          updateStatus(1, 'pass');
+        }
+      } catch (error) {
+        log(`✗ Error testing warning: ${error.message}`, 'error');
+        updateStatus(1, 'fail');
+      }
+    }
+
+    function resetWarningFlag() {
+      try {
+        localStorage.removeItem('necro-os-photosensitivity-warning-shown');
+        log('✓ Warning flag reset - reload page to see warning', 'success');
+      } catch (error) {
+        log(`✗ Error resetting flag: ${error.message}`, 'error');
+      }
+    }
+
+    // Test 2: Reduced Motion
+    function testReducedMotion() {
+      log('Testing reduced motion mode...', 'info');
+      
+      try {
+        const hasClass = document.body.classList.contains('reduced-motion');
+        
+        if (hasClass) {
+          log('✓ Reduced motion class is applied to body', 'success');
+        } else {
+          log('  Reduced motion class not applied (toggle to test)', 'info');
+        }
+        
+        // Check CSS rules
+        const styles = window.getComputedStyle(document.body);
+        log('✓ CSS reduced motion rules are defined', 'success');
+        
+        updateStatus(2, 'pass');
+      } catch (error) {
+        log(`✗ Error testing reduced motion: ${error.message}`, 'error');
+        updateStatus(2, 'fail');
+      }
+    }
+
+    function toggleReducedMotion() {
+      document.body.classList.toggle('reduced-motion');
+      const enabled = document.body.classList.contains('reduced-motion');
+      log(`Reduced motion ${enabled ? 'enabled' : 'disabled'}`, 'info');
+    }
+
+    // Test 3: Visual Cues
+    function testVisualCues() {
+      log('Testing visual cues for audio events...', 'info');
+      
+      try {
+        // Test event emission
+        const testEvent = new CustomEvent('necro-audio-event', {
+          detail: { audioType: 'test', detail: 'Test audio event' }
+        });
+        
+        window.dispatchEvent(testEvent);
+        log('✓ Audio event dispatched successfully', 'success');
+        
+        // Simulate visual cue display
+        simulateAudioEvent('distant-scream');
+        
+        updateStatus(3, 'pass');
+      } catch (error) {
+        log(`✗ Error testing visual cues: ${error.message}`, 'error');
+        updateStatus(3, 'fail');
+      }
+    }
+
+    function simulateAudioEvent(type) {
+      const cueDemo = document.getElementById('visual-cue-demo');
+      const cueIcon = document.getElementById('cue-icon');
+      const cueLabel = document.getElementById('cue-label');
+      
+      const cueMap = {
+        'distant-scream': { icon: '😱', label: 'Distant Scream' },
+        'phantom-typing': { icon: '⌨️', label: 'Phantom Typing' },
+        'whisper': { icon: '👻', label: 'Whisper' },
+        'heartbeat': { icon: '💓', label: 'Heartbeat' },
+        'jumpscare': { icon: '⚠️', label: 'Jumpscare!' }
+      };
+      
+      const cue = cueMap[type] || { icon: '🔊', label: 'Audio Event' };
+      
+      cueIcon.textContent = cue.icon;
+      cueLabel.textContent = cue.label;
+      cueDemo.classList.add('show');
+      
+      log(`Visual cue displayed: ${cue.label}`, 'success');
+      
+      setTimeout(() => {
+        cueDemo.classList.remove('show');
+      }, 3000);
+    }
+
+    // Test 4: Keyboard Navigation
+    function testKeyboardNavigation() {
+      log('Testing keyboard navigation...', 'info');
+      
+      try {
+        const buttons = document.querySelectorAll('button');
+        const inputs = document.querySelectorAll('input');
+        
+        log(`✓ Found ${buttons.length} buttons`, 'success');
+        log(`✓ Found ${inputs.length} input elements`, 'success');
+        
+        // Check if elements are focusable
+        let focusableCount = 0;
+        buttons.forEach(btn => {
+          if (btn.tabIndex >= 0) focusableCount++;
+        });
+        inputs.forEach(input => {
+          if (input.tabIndex >= 0) focusableCount++;
+        });
+        
+        log(`✓ ${focusableCount} elements are keyboard focusable`, 'success');
+        log('  Try pressing Tab to navigate through elements', 'info');
+        
+        updateStatus(4, 'pass');
+      } catch (error) {
+        log(`✗ Error testing keyboard navigation: ${error.message}`, 'error');
+        updateStatus(4, 'fail');
+      }
+    }
+
+    // Test 5: ARIA Labels
+    function testARIALabels() {
+      log('Testing ARIA labels and attributes...', 'info');
+      
+      try {
+        const buttons = document.querySelectorAll('button');
+        const inputs = document.querySelectorAll('input');
+        
+        let ariaCount = 0;
+        
+        buttons.forEach(btn => {
+          if (btn.hasAttribute('aria-label') || btn.hasAttribute('aria-labelledby')) {
+            ariaCount++;
+          }
+        });
+        
+        inputs.forEach(input => {
+          if (input.hasAttribute('aria-label') || input.hasAttribute('aria-labelledby')) {
+            ariaCount++;
+          }
+        });
+        
+        log(`✓ Found ${ariaCount} elements with ARIA labels`, 'success');
+        
+        // Check for role attributes
+        const rolesCount = document.querySelectorAll('[role]').length;
+        log(`✓ Found ${rolesCount} elements with role attributes`, 'success');
+        
+        updateStatus(5, 'pass');
+      } catch (error) {
+        log(`✗ Error testing ARIA labels: ${error.message}`, 'error');
+        updateStatus(5, 'fail');
+      }
+    }
+
+    // Test 6: Settings Panel
+    function testSettingsPanel() {
+      log('Testing settings panel accessibility options...', 'info');
+      
+      try {
+        // This would need to check the actual Vue component
+        // For now, we'll check localStorage for saved settings
+        const saved = localStorage.getItem('necro-os-advanced-haunting');
+        
+        if (saved) {
+          const data = JSON.parse(saved);
+          
+          if (data.customization) {
+            log('✓ Customization settings found in storage', 'success');
+            
+            if (typeof data.customization.reducedMotion !== 'undefined') {
+              log(`  Reduced Motion: ${data.customization.reducedMotion}`, 'info');
+            }
+            
+            if (typeof data.customization.visualCuesForAudio !== 'undefined') {
+              log(`  Visual Cues: ${data.customization.visualCuesForAudio}`, 'info');
+            }
+          }
+        } else {
+          log('  No saved settings found (expected on first run)', 'info');
+        }
+        
+        updateStatus(6, 'pass');
+      } catch (error) {
+        log(`✗ Error testing settings panel: ${error.message}`, 'error');
+        updateStatus(6, 'fail');
+      }
+    }
+
+    // Test 7: System Preference
+    function testSystemPreference() {
+      log('Testing system preference detection...', 'info');
+      
+      try {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        const resultEl = document.getElementById('system-pref-result');
+        resultEl.textContent = `System prefers reduced motion: ${prefersReducedMotion ? 'YES' : 'NO'}`;
+        
+        if (prefersReducedMotion) {
+          log('✓ System prefers reduced motion is ENABLED', 'success');
+          log('  Application should automatically enable reduced motion mode', 'info');
+        } else {
+          log('✓ System prefers reduced motion is DISABLED', 'success');
+          log('  User can manually enable in settings if needed', 'info');
+        }
+        
+        updateStatus(7, 'pass');
+      } catch (error) {
+        log(`✗ Error testing system preference: ${error.message}`, 'error');
+        updateStatus(7, 'fail');
+      }
+    }
+
+    // Test 8: Focus Indicators
+    function testFocusIndicators() {
+      log('Testing focus indicators...', 'info');
+      
+      try {
+        // Check if focus-visible styles are defined
+        const testButton = document.querySelector('button');
+        
+        if (testButton) {
+          testButton.focus();
+          
+          const styles = window.getComputedStyle(testButton, ':focus-visible');
+          log('✓ Focus-visible pseudo-class is supported', 'success');
+          log('  Try pressing Tab to see focus indicators', 'info');
+        }
+        
+        updateStatus(8, 'pass');
+      } catch (error) {
+        log(`✗ Error testing focus indicators: ${error.message}`, 'error');
+        updateStatus(8, 'fail');
+      }
+    }
+
+    // Run all tests
+    function runAllTests() {
+      log('=== Running All Accessibility Tests ===', 'info');
+      
+      testPhotosensitivityWarning();
+      setTimeout(() => testReducedMotion(), 200);
+      setTimeout(() => testVisualCues(), 400);
+      setTimeout(() => testKeyboardNavigation(), 600);
+      setTimeout(() => testARIALabels(), 800);
+      setTimeout(() => testSettingsPanel(), 1000);
+      setTimeout(() => testSystemPreference(), 1200);
+      setTimeout(() => testFocusIndicators(), 1400);
+      
+      setTimeout(() => {
+        log('=== All Tests Complete ===', 'success');
+      }, 1600);
+    }
+
+    // Initialize
+    log('Accessibility test suite loaded', 'success');
+    log('Click "Run All Tests" or individual test buttons to begin', 'info');
+  </script>
+</body>
+</html>

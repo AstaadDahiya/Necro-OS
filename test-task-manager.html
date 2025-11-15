@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Manager & Clock Possession Test</title>
+  <style>
+    body {
+      font-family: 'MS Sans Serif', sans-serif;
+      padding: 20px;
+      background: #c0c0c0;
+    }
+    .test-section {
+      background: white;
+      border: 2px solid #808080;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+    .test-section h2 {
+      margin-top: 0;
+      color: #000080;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 5px 15px;
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .status {
+      padding: 10px;
+      background: #f0f0f0;
+      border: 1px solid #808080;
+      margin-top: 10px;
+      font-size: 11px;
+    }
+    .process-list {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid #808080;
+      padding: 5px;
+      font-size: 11px;
+    }
+    .process-item {
+      padding: 3px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .process-item.cursed {
+      color: #8b0000;
+      font-weight: bold;
+    }
+    .clock-display {
+      font-size: 24px;
+      padding: 20px;
+      text-align: center;
+      background: #000;
+      color: #0f0;
+      font-family: monospace;
+      border: 2px solid #808080;
+    }
+  </style>
+</head>
+<body>
+  <h1>🖥️ Task Manager & Clock Possession Test</h1>
+  
+  <div class="test-section">
+    <h2>Clock Possession Tests</h2>
+    <div class="controls">
+      <button onclick="testClockBackwards()">Test Clock Backwards (Possession > 30)</button>
+      <button onclick="testShow333AM()">Test 3:33 AM Display</button>
+      <button onclick="testNormalClock()">Test Normal Clock</button>
+    </div>
+    <div class="clock-display" id="clockDisplay">--:-- --</div>
+    <div class="status" id="clockStatus">Ready to test clock possession...</div>
+  </div>
+
+  <div class="test-section">
+    <h2>Task Manager Cursed Processes Tests</h2>
+    <div class="controls">
+      <button onclick="testCursedProcesses(0)">Test Possession 0 (2 processes)</button>
+      <button onclick="testCursedProcesses(30)">Test Possession 30 (3 processes)</button>
+      <button onclick="testCursedProcesses(60)">Test Possession 60 (5 processes)</button>
+      <button onclick="testCursedProcesses(100)">Test Possession 100 (5 processes)</button>
+    </div>
+    <div class="process-list" id="processList"></div>
+    <div class="status" id="processStatus">Ready to test cursed processes...</div>
+  </div>
+
+  <script type="module">
+    import { 
+      shouldRunBackwards, 
+      getBackwardsDuration, 
+      shouldShow333AM,
+      getCursedProcesses 
+    } from './src/utils/possessedAppsService.js';
+
+    // Make functions available globally
+    window.shouldRunBackwards = shouldRunBackwards;
+    window.getBackwardsDuration = getBackwardsDuration;
+    window.shouldShow333AM = shouldShow333AM;
+    window.getCursedProcesses = getCursedProcesses;
+
+    // Clock test functions
+    let clockInterval = null;
+    let isBackwards = false;
+
+    window.testClockBackwards = function() {
+      clearInterval(clockInterval);
+      isBackwards = true;
+      let time = new Date();
+      
+      document.getElementById('clockStatus').innerHTML = 
+        `✅ Clock running backwards for ${getBackwardsDuration()} seconds (simulated)<br>` +
+        `Possession > 30: ${shouldRunBackwards(31)}`;
+      
+      clockInterval = setInterval(() => {
+        time = new Date(time.getTime() - 1000); // Go backwards
+        updateClockDisplay(time);
+      }, 1000);
+    };
+
+    window.testShow333AM = function() {
+      clearInterval(clockInterval);
+      isBackwards = false;
+      
+      // Create a time at 3:33 AM
+      const time = new Date();
+      time.setHours(3, 33, 0);
+      
+      document.getElementById('clockStatus').innerHTML = 
+        `✅ Testing 3:33 AM display<br>` +
+        `Should show 3:33 AM: ${shouldShow333AM(time)}<br>` +
+        `Testing 3:32 AM: ${shouldShow333AM(new Date(time.getTime() - 60000))}<br>` +
+        `Testing 3:34 AM: ${shouldShow333AM(new Date(time.getTime() + 60000))}`;
+      
+      updateClockDisplay(time);
+    };
+
+    window.testNormalClock = function() {
+      clearInterval(clockInterval);
+      isBackwards = false;
+      
+      document.getElementById('clockStatus').innerHTML = 
+        `✅ Clock running normally<br>` +
+        `Possession 0: ${shouldRunBackwards(0)}`;
+      
+      clockInterval = setInterval(() => {
+        updateClockDisplay(new Date());
+      }, 1000);
+    };
+
+    function updateClockDisplay(date) {
+      let hours = date.getHours();
+      const minutes = date.getMinutes();
+      const seconds = date.getSeconds();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      
+      hours = hours % 12;
+      hours = hours ? hours : 12;
+      
+      const timeStr = `${hours}:${pad(minutes)}:${pad(seconds)} ${ampm}`;
+      document.getElementById('clockDisplay').textContent = timeStr;
+    }
+
+    function pad(num) {
+      return num < 10 ? '0' + num : num;
+    }
+
+    // Task Manager test functions
+    window.testCursedProcesses = function(possessionLevel) {
+      const processes = getCursedProcesses(possessionLevel);
+      
+      let html = '<h3>Cursed Processes:</h3>';
+      processes.forEach(proc => {
+        html += `
+          <div class="process-item cursed">
+            <strong>${proc.name}</strong> - 
+            PID: ${proc.pid}, 
+            CPU: ${proc.cpu}%, 
+            Memory: ${proc.memory} MB, 
+            Status: ${proc.status}
+          </div>
+        `;
+      });
+      
+      document.getElementById('processList').innerHTML = html;
+      document.getElementById('processStatus').innerHTML = 
+        `✅ Generated ${processes.length} cursed processes at possession level ${possessionLevel}<br>` +
+        `Expected: ${Math.min(Math.floor(possessionLevel / 20) + 2, 5)} processes`;
+    };
+
+    // Start with normal clock
+    testNormalClock();
+  </script>
+</body>
+</html>

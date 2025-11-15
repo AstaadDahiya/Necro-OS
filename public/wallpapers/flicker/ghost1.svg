@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" />
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="768" fill="#000000"/>
+  <rect width="1024" height="768" fill="#ffffff" opacity="0.1" filter="url(#noise)"/>
+  <text x="512" y="384" font-family="Arial" font-size="120" fill="#ff0000" opacity="0.3" text-anchor="middle">👻</text>
+</svg>

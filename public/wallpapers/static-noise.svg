@@ -1,0 +1,64 @@
+<svg width="256" height="256" viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- TV static noise pattern - tileable -->
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0"/>
+    </filter>
+    
+    <!-- Additional RGB chromatic aberration -->
+    <filter id="chromatic">
+      <feOffset in="SourceGraphic" dx="2" dy="0" result="red"/>
+      <feColorMatrix in="red" type="matrix" values="1 0 0 0 0
+                                                      0 0 0 0 0
+                                                      0 0 0 0 0
+                                                      0 0 0 1 0" result="redChannel"/>
+      
+      <feOffset in="SourceGraphic" dx="-2" dy="0" result="blue"/>
+      <feColorMatrix in="blue" type="matrix" values="0 0 0 0 0
+                                                       0 0 0 0 0
+                                                       0 0 1 0 0
+                                                       0 0 0 1 0" result="blueChannel"/>
+      
+      <feColorMatrix in="SourceGraphic" type="matrix" values="0 0 0 0 0
+                                                                0 1 0 0 0
+                                                                0 0 0 0 0
+                                                                0 0 0 1 0" result="greenChannel"/>
+      
+      <feBlend in="redChannel" in2="greenChannel" mode="screen" result="rg"/>
+      <feBlend in="rg" in2="blueChannel" mode="screen"/>
+    </filter>
+  </defs>
+  
+  <!-- Base static noise -->
+  <rect width="256" height="256" filter="url(#noise)" opacity="0.8"/>
+  
+  <!-- Horizontal interference lines -->
+  <rect x="0" y="45" width="256" height="2" fill="#ffffff" opacity="0.3"/>
+  <rect x="0" y="92" width="256" height="1" fill="#000000" opacity="0.4"/>
+  <rect x="0" y="138" width="256" height="3" fill="#ffffff" opacity="0.25"/>
+  <rect x="0" y="187" width="256" height="1" fill="#000000" opacity="0.35"/>
+  <rect x="0" y="223" width="256" height="2" fill="#ffffff" opacity="0.3"/>
+  
+  <!-- Glitch blocks with RGB shift -->
+  <g filter="url(#chromatic)">
+    <rect x="30" y="60" width="40" height="8" fill="#808080" opacity="0.6"/>
+    <rect x="120" y="105" width="60" height="12" fill="#606060" opacity="0.5"/>
+    <rect x="180" y="150" width="35" height="6" fill="#707070" opacity="0.55"/>
+    <rect x="50" y="200" width="50" height="10" fill="#656565" opacity="0.6"/>
+  </g>
+  
+  <!-- Dead pixel clusters -->
+  <rect x="80" y="30" width="2" height="2" fill="#000000"/>
+  <rect x="150" y="80" width="2" height="2" fill="#000000"/>
+  <rect x="200" y="120" width="2" height="2" fill="#000000"/>
+  <rect x="100" y="180" width="2" height="2" fill="#000000"/>
+  <rect x="220" y="220" width="2" height="2" fill="#000000"/>
+  
+  <!-- Bright pixel artifacts -->
+  <rect x="40" y="50" width="1" height="1" fill="#ffffff" opacity="0.9"/>
+  <rect x="130" y="95" width="1" height="1" fill="#ffffff" opacity="0.9"/>
+  <rect x="190" y="140" width="1" height="1" fill="#ffffff" opacity="0.9"/>
+  <rect x="70" y="190" width="1" height="1" fill="#ffffff" opacity="0.9"/>
+  <rect x="240" y="240" width="1" height="1" fill="#ffffff" opacity="0.9"/>
+</svg>

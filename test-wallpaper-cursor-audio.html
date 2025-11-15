@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wallpaper, Cursor & Audio Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1, h2 {
+      color: #0ff;
+      border-bottom: 2px solid #0ff;
+      padding-bottom: 10px;
+    }
+    
+    .section {
+      margin: 20px 0;
+      padding: 15px;
+      border: 1px solid #0f0;
+      background: #001100;
+    }
+    
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+    }
+    
+    button:hover {
+      background: #0ff;
+    }
+    
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      background: #000;
+      border-left: 4px solid #0ff;
+    }
+    
+    .error {
+      color: #f00;
+      border-left-color: #f00;
+    }
+    
+    .success {
+      color: #0f0;
+      border-left-color: #0f0;
+    }
+    
+    .warning {
+      color: #ff0;
+      border-left-color: #ff0;
+    }
+    
+    .info-box {
+      background: #002200;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #0f0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎨 Wallpaper, Cursor & Audio Test</h1>
+  
+  <div class="section">
+    <h2>Current Status</h2>
+    <div id="status-display" class="info-box">
+      <div>Possession Level: <span id="possession-level">0</span></div>
+      <div>Haunting Level: <span id="haunting-level">0</span></div>
+      <div>Cursor Corruption: <span id="cursor-status">Disabled</span></div>
+      <div>Wallpaper Flicker: <span id="wallpaper-status">Disabled</span></div>
+      <div>Audio Initialized: <span id="audio-status">No</span></div>
+    </div>
+  </div>
+  
+  <div class="section">
+    <h2>🖱️ Cursor Tests</h2>
+    <p>The cursor should be visible at all times. Corruption effects start at possession level 30+</p>
+    <button onclick="testCursor()">Test Cursor Visibility</button>
+    <button onclick="enableCursorCorruption()">Enable Cursor Corruption (Level 2)</button>
+    <button onclick="maxCursorCorruption()">Max Cursor Corruption (Level 5)</button>
+    <div id="cursor-log" class="status"></div>
+  </div>
+  
+  <div class="section">
+    <h2>🖼️ Wallpaper Tests</h2>
+    <p>Wallpaper flicker starts at haunting level 3, corrupted wallpaper at level 5</p>
+    <button onclick="triggerWallpaperFlicker()">Trigger Wallpaper Flicker</button>
+    <button onclick="setHauntingLevel(3)">Set Haunting Level 3 (Flicker)</button>
+    <button onclick="setHauntingLevel(5)">Set Haunting Level 5 (Corrupted)</button>
+    <button onclick="checkWallpaperFiles()">Check Wallpaper Files</button>
+    <div id="wallpaper-log" class="status"></div>
+  </div>
+  
+  <div class="section">
+    <h2>🔊 Audio Tests</h2>
+    <p>Test if audio files are loaded and can play</p>
+    <button onclick="checkAudioFiles()">Check Audio Files</button>
+    <button onclick="initializeAudio()">Initialize Audio System</button>
+    <button onclick="testWhisper()">Test Whisper Sound</button>
+    <button onclick="testHeartbeat()">Test Heartbeat Sound</button>
+    <button onclick="testScream()">Test Scream Sound</button>
+    <div id="audio-log" class="status"></div>
+  </div>
+  
+  <div class="section">
+    <h2>🎮 Quick Actions</h2>
+    <button onclick="setPossession(30)">Set Possession to 30</button>
+    <button onclick="setPossession(50)">Set Possession to 50</button>
+    <button onclick="setPossession(80)">Set Possession to 80</button>
+    <button onclick="resetAll()">Reset Everything</button>
+  </div>
+  
+  <div class="section">
+    <h2>📋 Event Log</h2>
+    <div id="event-log" style="max-height: 300px; overflow-y: auto; background: #000; padding: 10px; border: 1px solid #0f0;">
+    </div>
+    <button onclick="clearLog()">Clear Log</button>
+  </div>
+
+  <script type="module">
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js'
+    import { useGhostBehaviorStore } from './src/stores/ghostBehavior.js'
+    import { useVisualCorruptionStore } from './src/stores/visualCorruption.js'
+    import { createPinia } from 'pinia'
+    
+    // Initialize Pinia
+    const pinia = createPinia()
+    
+    // Make stores globally available
+    window.advancedHaunting = useAdvancedHauntingStore(pinia)
+    window.ghostBehavior = useGhostBehaviorStore(pinia)
+    window.visualCorruption = useVisualCorruptionStore(pinia)
+    
+    // Initialize stores
+    window.advancedHaunting.initialize()
+    window.ghostBehavior.initialize()
+    window.visualCorruption.initializeHauntingIntegration()
+    
+    // Log function
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('event-log')
+      const timestamp = new Date().toLocaleTimeString()
+      const color = type === 'error' ? '#f00' : type === 'success' ? '#0f0' : type === 'warning' ? '#ff0' : '#0ff'
+      logDiv.innerHTML += `<div style="color: ${color}; margin: 5px 0;">[${timestamp}] ${message}</div>`
+      logDiv.scrollTop = logDiv.scrollHeight
+    }
+    
+    window.log = log
+    
+    // Update status display
+    function updateStatus() {
+      document.getElementById('possession-level').textContent = window.advancedHaunting.possessionLevel.toFixed(1)
+      document.getElementById('haunting-level').textContent = window.ghostBehavior.hauntingLevel
+      document.getElementById('cursor-status').textContent = window.visualCorruption.cursorCorruption.enabled ? 'Enabled' : 'Disabled'
+      document.getElementById('wallpaper-status').textContent = window.visualCorruption.desktopCorruption.flickerTimer ? 'Active' : 'Disabled'
+      
+      // Check if audio is initialized
+      const audioInitialized = window.advancedHaunting.audioHauntingInitialized || false
+      document.getElementById('audio-status').textContent = audioInitialized ? 'Yes' : 'No'
+    }
+    
+    setInterval(updateStatus, 1000)
+    
+    // Cursor tests
+    window.testCursor = () => {
+      const cursorStyle = document.body.style.cursor
+      const cursorLog = document.getElementById('cursor-log')
+      
+      if (cursorStyle === 'none') {
+        cursorLog.innerHTML = '<span class="error">❌ Cursor is hidden! This is a bug.</span>'
+        cursorLog.className = 'status error'
+        log('Cursor visibility test FAILED - cursor is hidden', 'error')
+      } else {
+        cursorLog.innerHTML = '<span class="success">✅ Cursor is visible</span>'
+        cursorLog.className = 'status success'
+        log('Cursor visibility test PASSED', 'success')
+      }
+    }
+    
+    window.enableCursorCorruption = () => {
+      window.visualCorruption.enableCursorCorruption(2)
+      log('Enabled cursor corruption at level 2', 'success')
+      setTimeout(() => window.testCursor(), 100)
+    }
+    
+    window.maxCursorCorruption = () => {
+      window.visualCorruption.enableCursorCorruption(5)
+      log('Enabled maximum cursor corruption at level 5', 'success')
+      setTimeout(() => window.testCursor(), 100)
+    }
+    
+    // Wallpaper tests
+    window.triggerWallpaperFlicker = () => {
+      window.visualCorruption.triggerWallpaperFlicker()
+      log('Triggered wallpaper flicker', 'success')
+      
+      const wallpaperLog = document.getElementById('wallpaper-log')
+      wallpaperLog.innerHTML = '<span class="success">✅ Wallpaper flicker triggered - watch for brief flash</span>'
+      wallpaperLog.className = 'status success'
+    }
+    
+    window.setHauntingLevel = (level) => {
+      window.ghostBehavior.hauntingLevel = level
+      window.visualCorruption.updateFromHauntingLevel(level)
+      log(`Set haunting level to ${level}`, 'success')
+      
+      const wallpaperLog = document.getElementById('wallpaper-log')
+      if (level >= 5) {
+        wallpaperLog.innerHTML = '<span class="success">✅ Haunting level 5 - Corrupted wallpaper should be active</span>'
+      } else if (level >= 3) {
+        wallpaperLog.innerHTML = '<span class="success">✅ Haunting level 3 - Wallpaper flicker should occur every 20-40 seconds</span>'
+      }
+      wallpaperLog.className = 'status success'
+    }
+    
+    window.checkWallpaperFiles = async () => {
+      const wallpaperLog = document.getElementById('wallpaper-log')
+      wallpaperLog.innerHTML = 'Checking wallpaper files...'
+      
+      const files = [
+        '/wallpapers/flicker/ghost1.svg',
+        '/wallpapers/flicker/ghost2.svg',
+        '/wallpapers/corrupted-glitch.svg',
+        '/wallpapers/static-noise.svg'
+      ]
+      
+      let allFound = true
+      let results = []
+      
+      for (const file of files) {
+        try {
+          const response = await fetch(file)
+          if (response.ok) {
+            results.push(`✅ ${file}`)
+            log(`Found: ${file}`, 'success')
+          } else {
+            results.push(`❌ ${file} (${response.status})`)
+            log(`Missing: ${file}`, 'error')
+            allFound = false
+          }
+        } catch (error) {
+          results.push(`❌ ${file} (error)`)
+          log(`Error checking ${file}: ${error.message}`, 'error')
+          allFound = false
+        }
+      }
+      
+      wallpaperLog.innerHTML = results.join('<br>')
+      wallpaperLog.className = allFound ? 'status success' : 'status error'
+    }
+    
+    // Audio tests
+    window.checkAudioFiles = async () => {
+      const audioLog = document.getElementById('audio-log')
+      audioLog.innerHTML = 'Checking audio files...'
+      
+      const files = [
+        '/sounds/haunting/whispers/generic-1.mp3',
+        '/sounds/haunting/tension/heartbeat.mp3',
+        '/sounds/haunting/ambient/distant-scream.mp3',
+        '/sounds/haunting/effects/phantom-typing.mp3',
+        '/sounds/haunting/effects/hdd-grinding.mp3'
+      ]
+      
+      let allFound = true
+      let results = []
+      
+      for (const file of files) {
+        try {
+          const response = await fetch(file)
+          if (response.ok) {
+            results.push(`✅ ${file}`)
+            log(`Found: ${file}`, 'success')
+          } else {
+            results.push(`❌ ${file} (${response.status})`)
+            log(`Missing: ${file}`, 'error')
+            allFound = false
+          }
+        } catch (error) {
+          results.push(`❌ ${file} (error)`)
+          log(`Error checking ${file}: ${error.message}`, 'error')
+          allFound = false
+        }
+      }
+      
+      audioLog.innerHTML = results.join('<br>')
+      audioLog.className = allFound ? 'status success' : 'status error'
+    }
+    
+    window.initializeAudio = async () => {
+      try {
+        await window.advancedHaunting.initializeAudioHaunting()
+        log('Audio system initialized successfully', 'success')
+        
+        const audioLog = document.getElementById('audio-log')
+        audioLog.innerHTML = '<span class="success">✅ Audio system initialized</span>'
+        audioLog.className = 'status success'
+      } catch (error) {
+        log(`Audio initialization failed: ${error.message}`, 'error')
+        
+        const audioLog = document.getElementById('audio-log')
+        audioLog.innerHTML = `<span class="error">❌ Audio initialization failed: ${error.message}</span>`
+        audioLog.className = 'status error'
+      }
+    }
+    
+    window.testWhisper = async () => {
+      try {
+        const audio = new Audio('/sounds/haunting/whispers/generic-1.mp3')
+        audio.volume = 0.3
+        await audio.play()
+        log('Playing whisper sound', 'success')
+        
+        const audioLog = document.getElementById('audio-log')
+        audioLog.innerHTML = '<span class="success">✅ Whisper sound playing</span>'
+        audioLog.className = 'status success'
+      } catch (error) {
+        log(`Whisper playback failed: ${error.message}`, 'error')
+        
+        const audioLog = document.getElementById('audio-log')
+        audioLog.innerHTML = `<span class="error">❌ Whisper playback failed: ${error.message}</span>`
+        audioLog.className = 'status error'
+      }
+    }
+    
+    window.testHeartbeat = async () => {
+      try {
+        const audio = new Audio('/sounds/haunting/tension/heartbeat.mp3')
+        audio.volume = 0.5
+        audio.loop = true
+        await audio.play()
+        log('Playing heartbeat sound (looping)', 'success')
+        
+        const audioLog = document.getElementById('audio-log')
+        audioLog.innerHTML = '<span class="success">✅ Heartbeat sound playing (looping)</span>'
+        audioLog.className = 'status success'
+        
+        // Stop after 5 seconds
+        setTimeout(() => {
+          audio.pause()
+          log('Stopped heartbeat sound', 'info')
+        }, 5000)
+      } catch (error) {
+        log(`Heartbeat playback failed: ${error.message}`, 'error')
+        
+        const audioLog = document.getElementById('audio-log')
+        audioLog.innerHTML = `<span class="error">❌ Heartbeat playback failed: ${error.message}</span>`
+        audioLog.className = 'status error'
+      }
+    }
+    
+    window.testScream = async () => {
+      try {
+        const audio = new Audio('/sounds/haunting/ambient/distant-scream.mp3')
+        audio.volume = 0.4
+        await audio.play()
+        log('Playing scream sound', 'success')
+        
+        const audioLog = document.getElementById('audio-log')
+        audioLog.innerHTML = '<span class="success">✅ Scream sound playing</span>'
+        audioLog.className = 'status success'
+      } catch (error) {
+        log(`Scream playback failed: ${error.message}`, 'error')
+        
+        const audioLog = document.getElementById('audio-log')
+        audioLog.innerHTML = `<span class="error">❌ Scream playback failed: ${error.message}</span>`
+        audioLog.className = 'status error'
+      }
+    }
+    
+    // Quick actions
+    window.setPossession = (level) => {
+      window.advancedHaunting.setPossessionLevel(level)
+      log(`Set possession level to ${level}`, 'success')
+    }
+    
+    window.resetAll = () => {
+      window.advancedHaunting.setPossessionLevel(0)
+      window.ghostBehavior.hauntingLevel = 0
+      window.visualCorruption.updateFromHauntingLevel(0)
+      log('Reset all levels to 0', 'success')
+    }
+    
+    window.clearLog = () => {
+      document.getElementById('event-log').innerHTML = ''
+    }
+    
+    // Initial log
+    log('Test page initialized', 'success')
+    log('Cursor should be visible at all times', 'info')
+    log('Run tests to verify wallpaper and audio functionality', 'info')
+  </script>
+</body>
+</html>

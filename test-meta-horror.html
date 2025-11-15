@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meta Horror Service Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      margin: 0;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #ff0000;
+      text-align: center;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    
+    .test-section {
+      background: #111;
+      border: 2px solid #0f0;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+    
+    .test-section h2 {
+      color: #ffff00;
+      margin-top: 0;
+    }
+    
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    
+    button:hover {
+      background: #0ff;
+      transform: scale(1.05);
+    }
+    
+    button:active {
+      transform: scale(0.95);
+    }
+    
+    .info {
+      background: #222;
+      padding: 10px;
+      margin: 10px 0;
+      border-left: 4px solid #0ff;
+    }
+    
+    .status {
+      margin: 10px 0;
+      padding: 10px;
+      background: #1a1a1a;
+      border-radius: 4px;
+    }
+    
+    .status.active {
+      border-left: 4px solid #0f0;
+    }
+    
+    .status.cooldown {
+      border-left: 4px solid #ff0000;
+    }
+    
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      margin: 10px 0;
+    }
+    
+    .possession-display {
+      font-size: 24px;
+      text-align: center;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>⚠️ META HORROR SERVICE TEST ⚠️</h1>
+    
+    <div class="test-section">
+      <h2>Possession Level Control</h2>
+      <div class="possession-display" id="possessionDisplay">Possession: 0</div>
+      <input type="range" id="possessionSlider" min="0" max="100" value="0">
+      <div class="info">
+        Adjust the slider to simulate different possession levels and test threshold-based effects.
+      </div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 1: Fake RAM Error (Possession > 55)</h2>
+      <div class="info">
+        <strong>Requirements:</strong> 7.1, 7.2<br>
+        <strong>Expected:</strong> Shows critical RAM error with memory address, non-dismissible for 5 seconds
+      </div>
+      <div class="controls">
+        <button onclick="testRAMError()">Trigger RAM Error</button>
+        <button onclick="setPossession(60)">Set Possession to 60</button>
+      </div>
+      <div class="status" id="ramStatus">Status: Ready</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 2: Screen Crack Effect (Possession > 65)</h2>
+      <div class="info">
+        <strong>Requirements:</strong> 7.3<br>
+        <strong>Expected:</strong> Shows screen crack overlay with glass breaking audio, persists for 10 seconds
+      </div>
+      <div class="controls">
+        <button onclick="testScreenCrack()">Trigger Screen Crack</button>
+        <button onclick="setPossession(70)">Set Possession to 70</button>
+      </div>
+      <div class="status" id="crackStatus">Status: Ready</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 3: Overheating Warning (Possession > 45)</h2>
+      <div class="info">
+        <strong>Requirements:</strong> 7.4<br>
+        <strong>Expected:</strong> Shows temperature warning ramping from 75°C to 95°C over 30 seconds
+      </div>
+      <div class="controls">
+        <button onclick="testOverheating()">Trigger Overheating</button>
+        <button onclick="setPossession(50)">Set Possession to 50</button>
+      </div>
+      <div class="status" id="heatStatus">Status: Ready</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 4: Cooldown System (300 seconds)</h2>
+      <div class="info">
+        <strong>Requirements:</strong> 7.7<br>
+        <strong>Expected:</strong> Same effect cannot trigger within 300 seconds (5 minutes)
+      </div>
+      <div class="controls">
+        <button onclick="testCooldown()">Test Cooldown</button>
+        <button onclick="resetCooldowns()">Reset All Cooldowns</button>
+      </div>
+      <div class="status" id="cooldownStatus">Status: Ready</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Test 5: Random Effect Trigger</h2>
+      <div class="info">
+        Triggers a random meta horror effect based on current possession level
+      </div>
+      <div class="controls">
+        <button onclick="triggerRandom()">Trigger Random Effect</button>
+        <button onclick="clearAll()">Clear All Effects</button>
+      </div>
+      <div class="status" id="randomStatus">Status: Ready</div>
+    </div>
+    
+    <div class="test-section">
+      <h2>Active Effects Monitor</h2>
+      <div id="activeEffects" class="info">No active effects</div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { metaHorrorService } from './src/utils/metaHorrorService.js'
+    import { audioService } from './src/utils/audioService.js'
+    
+    // Initialize audio service
+    audioService.init()
+    
+    // Make services available globally for button handlers
+    window.metaHorrorService = metaHorrorService
+    window.audioService = audioService
+    
+    // Current possession level
+    let currentPossession = 0
+    
+    // Update possession display
+    function updatePossessionDisplay() {
+      const display = document.getElementById('possessionDisplay')
+      display.textContent = `Possession: ${currentPossession}`
+      
+      // Update color based on level
+      if (currentPossession >= 80) {
+        display.style.color = '#ff0000'
+      } else if (currentPossession >= 60) {
+        display.style.color = '#ff6600'
+      } else if (currentPossession >= 40) {
+        display.style.color = '#ffff00'
+      } else {
+        display.style.color = '#0f0'
+      }
+    }
+    
+    // Possession slider handler
+    document.getElementById('possessionSlider').addEventListener('input', (e) => {
+      currentPossession = parseInt(e.target.value)
+      updatePossessionDisplay()
+    })
+    
+    // Set possession level
+    window.setPossession = (level) => {
+      currentPossession = level
+      document.getElementById('possessionSlider').value = level
+      updatePossessionDisplay()
+    }
+    
+    // Test RAM Error
+    window.testRAMError = () => {
+      const status = document.getElementById('ramStatus')
+      
+      if (currentPossession <= 55) {
+        status.textContent = 'Status: ❌ Possession too low (need > 55)'
+        status.className = 'status'
+        return
+      }
+      
+      if (metaHorrorService.isOnCooldown('ramError')) {
+        status.textContent = 'Status: ⏳ On cooldown (300s)'
+        status.className = 'status cooldown'
+        return
+      }
+      
+      status.textContent = 'Status: ✅ Triggering RAM Error...'
+      status.className = 'status active'
+      
+      metaHorrorService.showFakeRAMError(currentPossession)
+      
+      setTimeout(() => {
+        status.textContent = 'Status: ⏳ On cooldown (300s)'
+        status.className = 'status cooldown'
+      }, 1000)
+    }
+    
+    // Test Screen Crack
+    window.testScreenCrack = () => {
+      const status = document.getElementById('crackStatus')
+      
+      if (currentPossession <= 65) {
+        status.textContent = 'Status: ❌ Possession too low (need > 65)'
+        status.className = 'status'
+        return
+      }
+      
+      if (metaHorrorService.isOnCooldown('screenCrack')) {
+        status.textContent = 'Status: ⏳ On cooldown (300s)'
+        status.className = 'status cooldown'
+        return
+      }
+      
+      status.textContent = 'Status: ✅ Triggering Screen Crack...'
+      status.className = 'status active'
+      
+      metaHorrorService.showScreenCrack(currentPossession)
+      
+      setTimeout(() => {
+        status.textContent = 'Status: ⏳ On cooldown (300s)'
+        status.className = 'status cooldown'
+      }, 1000)
+    }
+    
+    // Test Overheating
+    window.testOverheating = () => {
+      const status = document.getElementById('heatStatus')
+      
+      if (currentPossession <= 45) {
+        status.textContent = 'Status: ❌ Possession too low (need > 45)'
+        status.className = 'status'
+        return
+      }
+      
+      if (metaHorrorService.isOnCooldown('overheating')) {
+        status.textContent = 'Status: ⏳ On cooldown (300s)'
+        status.className = 'status cooldown'
+        return
+      }
+      
+      status.textContent = 'Status: ✅ Triggering Overheating Warning...'
+      status.className = 'status active'
+      
+      metaHorrorService.showOverheatingWarning(currentPossession)
+      
+      setTimeout(() => {
+        status.textContent = 'Status: ⏳ On cooldown (300s)'
+        status.className = 'status cooldown'
+      }, 1000)
+    }
+    
+    // Test Cooldown
+    window.testCooldown = () => {
+      const status = document.getElementById('cooldownStatus')
+      
+      // Try to trigger RAM error twice
+      setPossession(60)
+      
+      status.textContent = 'Status: Testing cooldown system...'
+      status.className = 'status active'
+      
+      // First trigger
+      metaHorrorService.showFakeRAMError(currentPossession)
+      
+      setTimeout(() => {
+        // Try second trigger (should be blocked)
+        const blocked = metaHorrorService.isOnCooldown('ramError')
+        
+        if (blocked) {
+          status.textContent = 'Status: ✅ Cooldown working! Second trigger blocked.'
+          status.className = 'status active'
+        } else {
+          status.textContent = 'Status: ❌ Cooldown failed! Second trigger allowed.'
+          status.className = 'status'
+        }
+      }, 2000)
+    }
+    
+    // Reset cooldowns
+    window.resetCooldowns = () => {
+      metaHorrorService.resetEventLog()
+      
+      document.getElementById('ramStatus').textContent = 'Status: Ready'
+      document.getElementById('ramStatus').className = 'status'
+      
+      document.getElementById('crackStatus').textContent = 'Status: Ready'
+      document.getElementById('crackStatus').className = 'status'
+      
+      document.getElementById('heatStatus').textContent = 'Status: Ready'
+      document.getElementById('heatStatus').className = 'status'
+      
+      document.getElementById('cooldownStatus').textContent = 'Status: ✅ All cooldowns reset'
+      document.getElementById('cooldownStatus').className = 'status active'
+    }
+    
+    // Trigger random effect
+    window.triggerRandom = () => {
+      const status = document.getElementById('randomStatus')
+      
+      if (currentPossession <= 45) {
+        status.textContent = 'Status: ❌ Possession too low (need > 45)'
+        status.className = 'status'
+        return
+      }
+      
+      status.textContent = 'Status: ✅ Triggering random effect...'
+      status.className = 'status active'
+      
+      metaHorrorService.triggerRandomEffect(currentPossession)
+      
+      setTimeout(() => {
+        status.textContent = 'Status: Ready'
+        status.className = 'status'
+      }, 2000)
+    }
+    
+    // Clear all effects
+    window.clearAll = () => {
+      metaHorrorService.clearAllEffects()
+      
+      const status = document.getElementById('randomStatus')
+      status.textContent = 'Status: ✅ All effects cleared'
+      status.className = 'status active'
+      
+      setTimeout(() => {
+        status.textContent = 'Status: Ready'
+        status.className = 'status'
+      }, 2000)
+    }
+    
+    // Monitor active effects
+    setInterval(() => {
+      const monitor = document.getElementById('activeEffects')
+      const effects = Array.from(metaHorrorService.activeEffects)
+      
+      if (effects.length === 0) {
+        monitor.textContent = 'No active effects'
+      } else {
+        monitor.textContent = `Active: ${effects.join(', ')}`
+      }
+    }, 500)
+    
+    // Initialize
+    updatePossessionDisplay()
+    
+    console.log('Meta Horror Service Test loaded')
+    console.log('Available functions:', {
+      testRAMError: 'Test fake RAM error',
+      testScreenCrack: 'Test screen crack effect',
+      testOverheating: 'Test overheating warning',
+      testCooldown: 'Test cooldown system',
+      triggerRandom: 'Trigger random effect',
+      clearAll: 'Clear all effects',
+      resetCooldowns: 'Reset all cooldowns',
+      setPossession: 'Set possession level'
+    })
+  </script>
+</body>
+</html>

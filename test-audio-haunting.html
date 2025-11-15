@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Haunting Service Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #f00;
+      text-align: center;
+    }
+    .section {
+      background: #111;
+      border: 2px solid #0f0;
+      padding: 15px;
+      margin: 15px 0;
+    }
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #0ff;
+    }
+    button:disabled {
+      background: #555;
+      color: #888;
+      cursor: not-allowed;
+    }
+    .status {
+      margin: 10px 0;
+      padding: 10px;
+      background: #222;
+      border-left: 3px solid #0f0;
+    }
+    .error {
+      border-left-color: #f00;
+      color: #f00;
+    }
+    .success {
+      border-left-color: #0f0;
+      color: #0f0;
+    }
+    input[type="range"] {
+      width: 200px;
+      vertical-align: middle;
+    }
+    .layer-info {
+      display: inline-block;
+      margin: 5px 10px;
+      padding: 5px 10px;
+      background: #222;
+      border: 1px solid #0f0;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎵 Audio Haunting Service Test 🎵</h1>
+  
+  <div class="section">
+    <h2>Initialization</h2>
+    <button id="initBtn">Initialize Audio Layers</button>
+    <button id="resumeBtn" disabled>Resume Audio Context</button>
+    <div id="initStatus" class="status">Not initialized</div>
+  </div>
+
+  <div class="section">
+    <h2>Layer Volume Control</h2>
+    <div>
+      <label>Ambient: <input type="range" id="ambientVolume" min="0" max="100" value="30" disabled></label>
+      <span id="ambientValue">0.30</span>
+    </div>
+    <div>
+      <label>Effects: <input type="range" id="effectsVolume" min="0" max="100" value="50" disabled></label>
+      <span id="effectsValue">0.50</span>
+    </div>
+    <div>
+      <label>Whispers: <input type="range" id="whispersVolume" min="0" max="100" value="40" disabled></label>
+      <span id="whispersValue">0.40</span>
+    </div>
+    <div>
+      <label>Tension: <input type="range" id="tensionVolume" min="0" max="100" value="60" disabled></label>
+      <span id="tensionValue">0.60</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Possession Level Control</h2>
+    <div>
+      <label>Possession Level (0-100): <input type="range" id="possessionLevel" min="0" max="100" value="0" disabled></label>
+      <span id="possessionValue">0</span>
+    </div>
+    <button id="updatePossessionBtn" disabled>Update Audio for Possession Level</button>
+    <div id="possessionStatus" class="status">Set possession level and click update</div>
+  </div>
+
+  <div class="section">
+    <h2>Ambient Layer Tests</h2>
+    <button id="playScreamBtn" disabled>Play Distant Scream</button>
+    <button id="stopAmbientBtn" disabled>Stop Ambient Layer</button>
+    <div id="ambientStatus" class="status">Ambient layer ready (requires possession > 25)</div>
+  </div>
+
+  <div class="section">
+    <h2>Effects Layer Tests</h2>
+    <button id="playTypingBtn" disabled>Play Phantom Typing</button>
+    <button id="playGrindingBtn" disabled>Play HDD Grinding</button>
+    <button id="stopEffectsBtn" disabled>Stop Effects Layer</button>
+    <div id="effectsStatus" class="status">Effects layer ready</div>
+  </div>
+
+  <div class="section">
+    <h2>Layer State</h2>
+    <button id="getStateBtn" disabled>Get All Layers State</button>
+    <div id="stateDisplay" class="status">
+      <div>Ambient: <span class="layer-info" id="ambientState">-</span></div>
+      <div>Effects: <span class="layer-info" id="effectsState">-</span></div>
+      <div>Whispers: <span class="layer-info" id="whispersState">-</span></div>
+      <div>Tension: <span class="layer-info" id="tensionState">-</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Test Results</h2>
+    <div id="results"></div>
+  </div>
+
+  <script type="module">
+    import { audioHauntingService } from './src/utils/audioHauntingService.js'
+
+    const results = document.getElementById('results')
+    
+    function addResult(message, isError = false) {
+      const div = document.createElement('div')
+      div.className = `status ${isError ? 'error' : 'success'}`
+      div.textContent = `${new Date().toLocaleTimeString()}: ${message}`
+      results.appendChild(div)
+    }
+
+    // Initialize button
+    document.getElementById('initBtn').addEventListener('click', async () => {
+      try {
+        await audioHauntingService.initializeAudioLayers()
+        document.getElementById('initStatus').textContent = '✓ Audio layers initialized successfully'
+        document.getElementById('initStatus').className = 'status success'
+        addResult('Audio layers initialized')
+        
+        // Enable controls
+        document.getElementById('resumeBtn').disabled = false
+        document.getElementById('ambientVolume').disabled = false
+        document.getElementById('effectsVolume').disabled = false
+        document.getElementById('whispersVolume').disabled = false
+        document.getElementById('tensionVolume').disabled = false
+        document.getElementById('possessionLevel').disabled = false
+        document.getElementById('updatePossessionBtn').disabled = false
+        document.getElementById('getStateBtn').disabled = false
+        document.getElementById('playScreamBtn').disabled = false
+        document.getElementById('stopAmbientBtn').disabled = false
+        document.getElementById('playTypingBtn').disabled = false
+        document.getElementById('playGrindingBtn').disabled = false
+        document.getElementById('stopEffectsBtn').disabled = false
+      } catch (error) {
+        document.getElementById('initStatus').textContent = `✗ Initialization failed: ${error.message}`
+        document.getElementById('initStatus').className = 'status error'
+        addResult(`Initialization failed: ${error.message}`, true)
+      }
+    })
+
+    // Resume button
+    document.getElementById('resumeBtn').addEventListener('click', async () => {
+      try {
+        await audioHauntingService.resume()
+        addResult('Audio context resumed')
+      } catch (error) {
+        addResult(`Resume failed: ${error.message}`, true)
+      }
+    })
+
+    // Volume sliders
+    const volumeSliders = [
+      { id: 'ambientVolume', layer: 'ambient', display: 'ambientValue' },
+      { id: 'effectsVolume', layer: 'effects', display: 'effectsValue' },
+      { id: 'whispersVolume', layer: 'whispers', display: 'whispersValue' },
+      { id: 'tensionVolume', layer: 'tension', display: 'tensionValue' }
+    ]
+
+    volumeSliders.forEach(({ id, layer, display }) => {
+      const slider = document.getElementById(id)
+      const displaySpan = document.getElementById(display)
+      
+      slider.addEventListener('input', (e) => {
+        const volume = e.target.value / 100
+        displaySpan.textContent = volume.toFixed(2)
+        audioHauntingService.setLayerVolume(layer, volume)
+        addResult(`${layer} volume set to ${volume.toFixed(2)}`)
+      })
+    })
+
+    // Possession level
+    const possessionSlider = document.getElementById('possessionLevel')
+    const possessionDisplay = document.getElementById('possessionValue')
+    
+    possessionSlider.addEventListener('input', (e) => {
+      possessionDisplay.textContent = e.target.value
+    })
+
+    document.getElementById('updatePossessionBtn').addEventListener('click', () => {
+      const level = parseInt(possessionSlider.value)
+      audioHauntingService.updateAudioForPossessionLevel(level)
+      
+      const dbIncrease = (level / 10) * 5
+      document.getElementById('possessionStatus').textContent = 
+        `Updated audio for possession level ${level} (${dbIncrease.toFixed(1)}dB increase)`
+      document.getElementById('possessionStatus').className = 'status success'
+      addResult(`Possession level updated to ${level}`)
+    })
+
+    // Ambient layer tests
+    document.getElementById('playScreamBtn').addEventListener('click', async () => {
+      const level = parseInt(possessionSlider.value)
+      if (level < 25) {
+        document.getElementById('ambientStatus').textContent = 
+          '⚠ Warning: Distant scream requires possession > 25. Playing anyway for testing.'
+        document.getElementById('ambientStatus').className = 'status error'
+      }
+      
+      try {
+        await audioHauntingService.playDistantScream(level)
+        document.getElementById('ambientStatus').textContent = 
+          `✓ Playing distant scream at possession level ${level}`
+        document.getElementById('ambientStatus').className = 'status success'
+        addResult(`Distant scream played at possession ${level}`)
+      } catch (error) {
+        document.getElementById('ambientStatus').textContent = 
+          `✗ Failed to play scream: ${error.message}`
+        document.getElementById('ambientStatus').className = 'status error'
+        addResult(`Scream failed: ${error.message}`, true)
+      }
+    })
+
+    document.getElementById('stopAmbientBtn').addEventListener('click', () => {
+      audioHauntingService.stopLayer('ambient')
+      document.getElementById('ambientStatus').textContent = 'Ambient layer stopped'
+      document.getElementById('ambientStatus').className = 'status'
+      addResult('Ambient layer stopped')
+    })
+
+    // Effects layer tests
+    document.getElementById('playTypingBtn').addEventListener('click', async () => {
+      try {
+        await audioHauntingService.playPhantomTyping()
+        document.getElementById('effectsStatus').textContent = 
+          '✓ Playing phantom typing sound'
+        document.getElementById('effectsStatus').className = 'status success'
+        addResult('Phantom typing played')
+      } catch (error) {
+        document.getElementById('effectsStatus').textContent = 
+          `✗ Failed to play typing: ${error.message}`
+        document.getElementById('effectsStatus').className = 'status error'
+        addResult(`Typing failed: ${error.message}`, true)
+      }
+    })
+
+    document.getElementById('playGrindingBtn').addEventListener('click', async () => {
+      const level = parseInt(possessionSlider.value)
+      if (level < 50) {
+        document.getElementById('effectsStatus').textContent = 
+          '⚠ Warning: HDD grinding requires possession > 50. Playing anyway for testing.'
+        document.getElementById('effectsStatus').className = 'status error'
+      }
+      
+      // Random duration between 3-8 seconds
+      const duration = 3 + Math.random() * 5
+      
+      try {
+        await audioHauntingService.playHDDGrinding(duration)
+        document.getElementById('effectsStatus').textContent = 
+          `✓ Playing HDD grinding for ${duration.toFixed(1)} seconds`
+        document.getElementById('effectsStatus').className = 'status success'
+        addResult(`HDD grinding played for ${duration.toFixed(1)}s`)
+      } catch (error) {
+        document.getElementById('effectsStatus').textContent = 
+          `✗ Failed to play grinding: ${error.message}`
+        document.getElementById('effectsStatus').className = 'status error'
+        addResult(`Grinding failed: ${error.message}`, true)
+      }
+    })
+
+    document.getElementById('stopEffectsBtn').addEventListener('click', () => {
+      audioHauntingService.stopLayer('effects')
+      document.getElementById('effectsStatus').textContent = 'Effects layer stopped'
+      document.getElementById('effectsStatus').className = 'status'
+      addResult('Effects layer stopped')
+    })
+
+    // Get state button
+    document.getElementById('getStateBtn').addEventListener('click', () => {
+      const state = audioHauntingService.getAllLayersState()
+      
+      Object.keys(state).forEach(layerName => {
+        const layerState = state[layerName]
+        const stateText = `Vol: ${layerState.volume.toFixed(2)} | Active: ${layerState.active} | Sound: ${layerState.currentSound || 'none'}`
+        document.getElementById(`${layerName}State`).textContent = stateText
+      })
+      
+      addResult('Layer states retrieved')
+    })
+
+    // Initial message
+    addResult('Test page loaded. Click "Initialize Audio Layers" to begin.')
+    addResult('Note: Audio files are placeholders. Replace with proper haunting sounds for production.')
+  </script>
+</body>
+</html>

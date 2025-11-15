@@ -1,0 +1,84 @@
+<svg width="1024" height="768" viewBox="0 0 1024 768" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="darkGrad9" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#1a0a0a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+    <filter id="ghostGlow9">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Dark background -->
+  <rect width="1024" height="768" fill="url(#darkGrad9)"/>
+  
+  <!-- Creepy shadowy figure in center -->
+  <ellipse cx="512" cy="600" rx="80" ry="20" fill="#0a0a0a" opacity="0.8"/>
+  
+  <!-- Main ghost figure - tall and menacing -->
+  <path d="M 512 300 
+           Q 480 320, 470 360
+           Q 465 400, 465 450
+           Q 465 500, 470 550
+           L 470 600
+           Q 475 605, 480 600
+           L 480 550
+           Q 485 545, 490 550
+           L 490 600
+           Q 495 605, 500 600
+           L 500 550
+           Q 505 545, 510 550
+           L 510 600
+           Q 515 605, 520 600
+           L 520 550
+           Q 525 545, 530 550
+           L 530 600
+           Q 535 605, 540 600
+           L 540 550
+           Q 545 545, 550 550
+           L 550 600
+           Q 555 605, 560 600
+           L 560 550
+           L 560 450
+           Q 560 400, 555 360
+           Q 545 320, 512 300 Z"
+        fill="#e8e8e8"
+        opacity="0.15"
+        filter="url(#ghostGlow9)"/>
+  
+  <!-- Hollow eyes -->
+  <ellipse cx="490" cy="380" rx="8" ry="12" fill="#000000" opacity="0.4"/>
+  <ellipse cx="534" cy="380" rx="8" ry="12" fill="#000000" opacity="0.4"/>
+  
+  <!-- Creepy smile -->
+  <path d="M 485 420 Q 512 430, 539 420" 
+        stroke="#000000" 
+        stroke-width="2" 
+        fill="none" 
+        opacity="0.3"/>
+  
+  <!-- Additional ghostly wisps floating around -->
+  <ellipse cx="350" cy="250" rx="30" ry="50" fill="#e8e8e8" opacity="0.08" filter="url(#ghostGlow9)"/>
+  <ellipse cx="680" cy="320" rx="25" ry="45" fill="#e8e8e8" opacity="0.08" filter="url(#ghostGlow9)"/>
+  <ellipse cx="280" cy="450" rx="35" ry="40" fill="#e8e8e8" opacity="0.08" filter="url(#ghostGlow9)"/>
+  <ellipse cx="750" cy="500" rx="28" ry="38" fill="#e8e8e8" opacity="0.08" filter="url(#ghostGlow9)"/>
+  
+  <!-- Eerie fog at bottom -->
+  <ellipse cx="512" cy="700" rx="400" ry="80" fill="#1a1a1a" opacity="0.3"/>
+  <ellipse cx="300" cy="720" rx="250" ry="60" fill="#1a1a1a" opacity="0.2"/>
+  <ellipse cx="700" cy="720" rx="250" ry="60" fill="#1a1a1a" opacity="0.2"/>
+  
+  <!-- Subtle static noise effect -->
+  <rect width="1024" height="768" fill="url(#noise9)" opacity="0.03"/>
+  
+  <defs>
+    <pattern id="noise9" x="0" y="0" width="4" height="4" patternUnits="userSpaceOnUse">
+      <rect width="1" height="1" fill="#ffffff" opacity="0.5"/>
+      <rect x="2" y="2" width="1" height="1" fill="#ffffff" opacity="0.5"/>
+    </pattern>
+  </defs>
+</svg>

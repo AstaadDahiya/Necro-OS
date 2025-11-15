@@ -1,0 +1,44 @@
+<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- Windows 95 style disk/drive icon for low disk space warnings -->
+  <defs>
+    <linearGradient id="diskGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#c0c0c0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#808080;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Hard drive body -->
+  <rect x="4" y="8" width="24" height="16" 
+        fill="url(#diskGrad)" 
+        stroke="#000000" 
+        stroke-width="1.5"
+        rx="2"/>
+  
+  <!-- Drive label area -->
+  <rect x="6" y="10" width="20" height="4" 
+        fill="#ffffff" 
+        stroke="#000000" 
+        stroke-width="1"/>
+  
+  <!-- Drive letter "C:" -->
+  <text x="8" y="13" 
+        font-family="Arial, sans-serif" 
+        font-size="3" 
+        fill="#000000">C:</text>
+  
+  <!-- Activity light -->
+  <circle cx="24" cy="12" r="1.5" fill="#ff0000"/>
+  
+  <!-- Drive details/vents -->
+  <line x1="6" y1="17" x2="26" y2="17" stroke="#606060" stroke-width="0.5"/>
+  <line x1="6" y1="19" x2="26" y2="19" stroke="#606060" stroke-width="0.5"/>
+  <line x1="6" y1="21" x2="26" y2="21" stroke="#606060" stroke-width="0.5"/>
+  
+  <!-- 3D highlight -->
+  <line x1="5" y1="9" x2="27" y2="9" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+  <line x1="5" y1="9" x2="5" y2="23" stroke="#ffffff" stroke-width="1" opacity="0.5"/>
+  
+  <!-- 3D shadow -->
+  <line x1="27" y1="9" x2="27" y2="23" stroke="#404040" stroke-width="1" opacity="0.5"/>
+  <line x1="5" y1="23" x2="27" y2="23" stroke="#404040" stroke-width="1" opacity="0.5"/>
+</svg>

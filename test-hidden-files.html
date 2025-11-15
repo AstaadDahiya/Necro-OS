@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hidden Files & Reality-Breaking Effects Test</title>
+  <style>
+    body {
+      font-family: 'Courier New', monospace;
+      background: #000;
+      color: #0f0;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+    }
+    
+    .test-section {
+      background: #111;
+      border: 2px solid #0f0;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 5px;
+    }
+    
+    .test-section h2 {
+      color: #00ff00;
+      margin-top: 0;
+    }
+    
+    button {
+      background: #0f0;
+      color: #000;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      border-radius: 3px;
+    }
+    
+    button:hover {
+      background: #0ff;
+    }
+    
+    button:active {
+      background: #0aa;
+    }
+    
+    .status {
+      margin: 10px 0;
+      padding: 10px;
+      background: #222;
+      border-left: 4px solid #0f0;
+    }
+    
+    .error {
+      border-left-color: #f00;
+      color: #f00;
+    }
+    
+    .success {
+      border-left-color: #0f0;
+      color: #0f0;
+    }
+    
+    .info {
+      border-left-color: #ff0;
+      color: #ff0;
+    }
+    
+    .possession-display {
+      font-size: 24px;
+      font-weight: bold;
+      color: #ff0000;
+      text-shadow: 0 0 10px #ff0000;
+      margin: 10px 0;
+    }
+    
+    input[type="range"] {
+      width: 100%;
+      margin: 10px 0;
+    }
+    
+    .file-content {
+      background: #000;
+      border: 1px solid #0f0;
+      padding: 15px;
+      margin: 10px 0;
+      white-space: pre-wrap;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>🔮 Hidden Files & Reality-Breaking Effects Test</h1>
+  
+  <div class="test-section">
+    <h2>📊 Possession Level Control</h2>
+    <div class="possession-display">Possession Level: <span id="possession-level">0</span></div>
+    <input type="range" id="possession-slider" min="0" max="100" value="0">
+    <div>
+      <button onclick="setPossession(0)">Set to 0</button>
+      <button onclick="setPossession(45)">Set to 45</button>
+      <button onclick="setPossession(55)">Set to 55</button>
+      <button onclick="setPossession(65)">Set to 65</button>
+      <button onclick="setPossession(75)">Set to 75</button>
+      <button onclick="setPossession(80)">Set to 80</button>
+      <button onclick="setPossession(100)">Set to 100</button>
+    </div>
+  </div>
+
+  <div class="test-section">
+    <h2>📁 Hidden Files Content Test</h2>
+    <p>Test the cryptic content generation for hidden files:</p>
+    <button onclick="testHiddenFile('YOUR_SECRETS.txt')">Show YOUR_SECRETS.txt</button>
+    <button onclick="testHiddenFile('WATCHING_YOU.log')">Show WATCHING_YOU.log</button>
+    <div id="file-content-display"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>👁️ Watching Notification Test</h2>
+    <p>Test the "Someone is watching your screen" notification (requires possession > 75):</p>
+    <button onclick="testWatchingNotification()">Trigger Watching Notification</button>
+    <button onclick="testWatchingNotificationCooldown()">Test Cooldown (should fail if < 5 min)</button>
+    <div id="watching-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>🎲 Random Meta Horror Effects</h2>
+    <p>Trigger random meta horror effects based on current possession level:</p>
+    <button onclick="triggerRandomEffect()">Trigger Random Effect</button>
+    <button onclick="testRAMError()">Test RAM Error (needs 55+)</button>
+    <button onclick="testScreenCrack()">Test Screen Crack (needs 65+)</button>
+    <button onclick="testOverheating()">Test Overheating (needs 45+)</button>
+    <div id="meta-horror-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>🔄 Integration Test</h2>
+    <p>Test the full integration with My Computer component:</p>
+    <button onclick="testMyComputerIntegration()">Test My Computer Integration</button>
+    <div id="integration-status"></div>
+  </div>
+
+  <div class="test-section">
+    <h2>📋 Test Log</h2>
+    <div id="test-log"></div>
+  </div>
+
+  <script type="module">
+    import { metaHorrorService } from './src/utils/metaHorrorService.js'
+    
+    // Make services available globally for testing
+    window.metaHorrorService = metaHorrorService
+    
+    // Track current possession level
+    let currentPossession = 0
+    
+    // Update possession display
+    function updatePossessionDisplay() {
+      document.getElementById('possession-level').textContent = currentPossession
+      document.getElementById('possession-slider').value = currentPossession
+    }
+    
+    // Set possession level
+    window.setPossession = function(level) {
+      currentPossession = level
+      updatePossessionDisplay()
+      log(`Possession level set to ${level}`, 'info')
+    }
+    
+    // Slider input
+    document.getElementById('possession-slider').addEventListener('input', (e) => {
+      currentPossession = parseInt(e.target.value)
+      updatePossessionDisplay()
+    })
+    
+    // Test hidden file content
+    window.testHiddenFile = function(filename) {
+      log(`Testing hidden file: ${filename}`, 'info')
+      
+      try {
+        const content = metaHorrorService.generateHiddenFileContent(filename)
+        
+        const display = document.getElementById('file-content-display')
+        display.innerHTML = `
+          <h3 style="color: #ff0000;">${filename}</h3>
+          <div class="file-content">${content}</div>
+        `
+        
+        log(`✓ Successfully generated content for ${filename}`, 'success')
+      } catch (error) {
+        log(`✗ Failed to generate content: ${error.message}`, 'error')
+      }
+    }
+    
+    // Test watching notification
+    window.testWatchingNotification = function() {
+      log('Testing watching notification...', 'info')
+      
+      if (currentPossession <= 75) {
+        log(`⚠ Warning: Possession level is ${currentPossession}, should be > 75`, 'error')
+      }
+      
+      try {
+        metaHorrorService.showWatchingNotification(currentPossession)
+        log('✓ Watching notification triggered', 'success')
+        
+        const status = document.getElementById('watching-status')
+        status.innerHTML = '<div class="status success">Notification should appear for 4 seconds</div>'
+      } catch (error) {
+        log(`✗ Failed to trigger notification: ${error.message}`, 'error')
+      }
+    }
+    
+    // Test watching notification cooldown
+    window.testWatchingNotificationCooldown = function() {
+      log('Testing watching notification cooldown...', 'info')
+      
+      const isOnCooldown = metaHorrorService.isOnCooldown('watchingNotification')
+      
+      if (isOnCooldown) {
+        log('✓ Cooldown is active (as expected)', 'success')
+        const status = document.getElementById('watching-status')
+        status.innerHTML = '<div class="status info">Cooldown active - notification blocked</div>'
+      } else {
+        log('⚠ Cooldown is not active', 'info')
+        testWatchingNotification()
+      }
+    }
+    
+    // Trigger random effect
+    window.triggerRandomEffect = function() {
+      log('Triggering random meta horror effect...', 'info')
+      
+      try {
+        metaHorrorService.triggerRandomEffect(currentPossession)
+        log('✓ Random effect triggered', 'success')
+        
+        const status = document.getElementById('meta-horror-status')
+        status.innerHTML = '<div class="status success">Random effect triggered based on possession level</div>'
+      } catch (error) {
+        log(`✗ Failed to trigger effect: ${error.message}`, 'error')
+      }
+    }
+    
+    // Test RAM error
+    window.testRAMError = function() {
+      log('Testing RAM error...', 'info')
+      
+      if (currentPossession <= 55) {
+        log(`⚠ Warning: Possession level is ${currentPossession}, should be > 55`, 'error')
+      }
+      
+      try {
+        metaHorrorService.showFakeRAMError(currentPossession)
+        log('✓ RAM error triggered', 'success')
+      } catch (error) {
+        log(`✗ Failed to trigger RAM error: ${error.message}`, 'error')
+      }
+    }
+    
+    // Test screen crack
+    window.testScreenCrack = function() {
+      log('Testing screen crack...', 'info')
+      
+      if (currentPossession <= 65) {
+        log(`⚠ Warning: Possession level is ${currentPossession}, should be > 65`, 'error')
+      }
+      
+      try {
+        metaHorrorService.showScreenCrack(currentPossession)
+        log('✓ Screen crack triggered', 'success')
+      } catch (error) {
+        log(`✗ Failed to trigger screen crack: ${error.message}`, 'error')
+      }
+    }
+    
+    // Test overheating
+    window.testOverheating = function() {
+      log('Testing overheating warning...', 'info')
+      
+      if (currentPossession <= 45) {
+        log(`⚠ Warning: Possession level is ${currentPossession}, should be > 45`, 'error')
+      }
+      
+      try {
+        metaHorrorService.showOverheatingWarning(currentPossession)
+        log('✓ Overheating warning triggered', 'success')
+      } catch (error) {
+        log(`✗ Failed to trigger overheating: ${error.message}`, 'error')
+      }
+    }
+    
+    // Test My Computer integration
+    window.testMyComputerIntegration = function() {
+      log('Testing My Computer integration...', 'info')
+      
+      const status = document.getElementById('integration-status')
+      status.innerHTML = `
+        <div class="status info">
+          <h3>Integration Test Instructions:</h3>
+          <ol>
+            <li>Open the main NecroOS application</li>
+            <li>Open "My Computer" from the desktop</li>
+            <li>Navigate to C:\\ drive</li>
+            <li>Look for hidden files: YOUR_SECRETS.txt and WATCHING_YOU.log</li>
+            <li>Double-click to open them in Notepad</li>
+            <li>Verify the cryptic content appears</li>
+            <li>Set possession level > 75 and wait for watching notification</li>
+          </ol>
+        </div>
+      `
+      
+      log('✓ Integration test instructions displayed', 'success')
+    }
+    
+    // Logging function
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('test-log')
+      const timestamp = new Date().toLocaleTimeString()
+      const entry = document.createElement('div')
+      entry.className = `status ${type}`
+      entry.textContent = `[${timestamp}] ${message}`
+      logDiv.insertBefore(entry, logDiv.firstChild)
+      
+      // Keep only last 20 log entries
+      while (logDiv.children.length > 20) {
+        logDiv.removeChild(logDiv.lastChild)
+      }
+      
+      console.log(`[Test] ${message}`)
+    }
+    
+    // Initialize
+    log('Test page loaded successfully', 'success')
+    updatePossessionDisplay()
+  </script>
+</body>
+</html>

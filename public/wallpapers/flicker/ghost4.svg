@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="768" viewBox="0 0 1024 768">
+  <defs>
+    <filter id="glitch">
+      <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="3" />
+      <feDisplacementMap in="SourceGraphic" scale="20"/>
+    </filter>
+  </defs>
+  <rect width="1024" height="768" fill="#001100"/>
+  <text x="512" y="384" font-family="Courier" font-size="64" fill="#00ff00" opacity="0.3" text-anchor="middle" filter="url(#glitch)">ERROR: SOUL NOT FOUND</text>
+</svg>

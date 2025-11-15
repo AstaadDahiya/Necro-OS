@@ -1,0 +1,72 @@
+<svg width="1024" height="768" viewBox="0 0 1024 768" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="darkGrad10" cx="50%" cy="30%">
+      <stop offset="0%" style="stop-color:#0d0d1a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+    </radialGradient>
+    <filter id="redGlow">
+      <feGaussianBlur stdDeviation="5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Dark background with slight blue tint -->
+  <rect width="1024" height="768" fill="url(#darkGrad10)"/>
+  
+  <!-- Multiple pairs of glowing red eyes in the darkness -->
+  <!-- Top left cluster -->
+  <ellipse cx="180" cy="150" rx="6" ry="8" fill="#ff0000" opacity="0.6" filter="url(#redGlow)"/>
+  <ellipse cx="200" cy="150" rx="6" ry="8" fill="#ff0000" opacity="0.6" filter="url(#redGlow)"/>
+  
+  <!-- Top right cluster -->
+  <ellipse cx="820" cy="180" rx="7" ry="9" fill="#ff0000" opacity="0.5" filter="url(#redGlow)"/>
+  <ellipse cx="842" cy="180" rx="7" ry="9" fill="#ff0000" opacity="0.5" filter="url(#redGlow)"/>
+  
+  <!-- Middle left -->
+  <ellipse cx="120" cy="350" rx="8" ry="10" fill="#ff0000" opacity="0.7" filter="url(#redGlow)"/>
+  <ellipse cx="145" cy="350" rx="8" ry="10" fill="#ff0000" opacity="0.7" filter="url(#redGlow)"/>
+  
+  <!-- Center - largest and most prominent -->
+  <ellipse cx="480" cy="380" rx="10" ry="14" fill="#ff0000" opacity="0.8" filter="url(#redGlow)"/>
+  <ellipse cx="510" cy="380" rx="10" ry="14" fill="#ff0000" opacity="0.8" filter="url(#redGlow)"/>
+  
+  <!-- Middle right -->
+  <ellipse cx="880" cy="400" rx="7" ry="9" fill="#ff0000" opacity="0.6" filter="url(#redGlow)"/>
+  <ellipse cx="902" cy="400" rx="7" ry="9" fill="#ff0000" opacity="0.6" filter="url(#redGlow)"/>
+  
+  <!-- Lower left -->
+  <ellipse cx="250" cy="550" rx="6" ry="8" fill="#ff0000" opacity="0.5" filter="url(#redGlow)"/>
+  <ellipse cx="270" cy="550" rx="6" ry="8" fill="#ff0000" opacity="0.5" filter="url(#redGlow)"/>
+  
+  <!-- Lower right -->
+  <ellipse cx="750" cy="580" rx="7" ry="9" fill="#ff0000" opacity="0.6" filter="url(#redGlow)"/>
+  <ellipse cx="773" cy="580" rx="7" ry="9" fill="#ff0000" opacity="0.6" filter="url(#redGlow)"/>
+  
+  <!-- Bottom center -->
+  <ellipse cx="400" cy="650" rx="5" ry="7" fill="#ff0000" opacity="0.4" filter="url(#redGlow)"/>
+  <ellipse cx="418" cy="650" rx="5" ry="7" fill="#ff0000" opacity="0.4" filter="url(#redGlow)"/>
+  
+  <ellipse cx="600" cy="670" rx="5" ry="7" fill="#ff0000" opacity="0.4" filter="url(#redGlow)"/>
+  <ellipse cx="618" cy="670" rx="5" ry="7" fill="#ff0000" opacity="0.4" filter="url(#redGlow)"/>
+  
+  <!-- Barely visible shadowy figures behind the eyes -->
+  <ellipse cx="495" cy="450" rx="60" ry="100" fill="#0a0a0a" opacity="0.3"/>
+  <ellipse cx="190" cy="200" rx="40" ry="70" fill="#0a0a0a" opacity="0.2"/>
+  <ellipse cx="831" cy="230" rx="45" ry="75" fill="#0a0a0a" opacity="0.2"/>
+  
+  <!-- Fog effect -->
+  <ellipse cx="512" cy="720" rx="500" ry="60" fill="#0d0d1a" opacity="0.4"/>
+  
+  <!-- Film grain texture -->
+  <rect width="1024" height="768" fill="url(#grain10)" opacity="0.04"/>
+  
+  <defs>
+    <pattern id="grain10" x="0" y="0" width="3" height="3" patternUnits="userSpaceOnUse">
+      <rect width="1" height="1" fill="#ffffff" opacity="0.3"/>
+      <rect x="1" y="1" width="1" height="1" fill="#000000" opacity="0.3"/>
+    </pattern>
+  </defs>
+</svg>

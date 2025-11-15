@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achievement System Test - NecroOS</title>
+  <style>
+    body {
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      background: #008080;
+      padding: 20px;
+      color: #000;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #c0c0c0;
+      border: 2px outset #fff;
+      padding: 20px;
+    }
+    
+    h1 {
+      font-size: 18px;
+      margin: 0 0 20px 0;
+      padding-bottom: 10px;
+      border-bottom: 2px groove #fff;
+    }
+    
+    .section {
+      margin-bottom: 20px;
+      padding: 15px;
+      background: #fff;
+      border: 2px inset #808080;
+    }
+    
+    .section h2 {
+      font-size: 14px;
+      margin: 0 0 10px 0;
+    }
+    
+    button {
+      background: #c0c0c0;
+      border: 2px outset #fff;
+      padding: 5px 15px;
+      font-family: 'MS Sans Serif', Arial, sans-serif;
+      font-size: 11px;
+      cursor: pointer;
+      margin: 5px 5px 5px 0;
+    }
+    
+    button:active {
+      border-style: inset;
+    }
+    
+    button:disabled {
+      color: #808080;
+      cursor: not-allowed;
+    }
+    
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      background: #fff;
+      border: 1px solid #000;
+      font-size: 11px;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .success {
+      background: #c0ffc0;
+    }
+    
+    .error {
+      background: #ffc0c0;
+    }
+    
+    .info {
+      background: #c0c0ff;
+    }
+    
+    .achievement-list {
+      list-style: none;
+      padding: 0;
+      margin: 10px 0;
+    }
+    
+    .achievement-item {
+      padding: 8px;
+      margin: 5px 0;
+      background: #f0f0f0;
+      border: 1px solid #808080;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .achievement-item.unlocked {
+      background: #fffacd;
+      border-color: #ffd700;
+    }
+    
+    .achievement-icon {
+      font-size: 24px;
+    }
+    
+    .achievement-info {
+      flex: 1;
+    }
+    
+    .achievement-name {
+      font-weight: bold;
+      font-size: 12px;
+    }
+    
+    .achievement-desc {
+      font-size: 10px;
+      color: #666;
+    }
+    
+    .achievement-status {
+      font-size: 10px;
+      font-weight: bold;
+    }
+    
+    .achievement-status.unlocked {
+      color: #008000;
+    }
+    
+    .achievement-status.locked {
+      color: #808080;
+    }
+    
+    .exorcism-counter {
+      font-size: 14px;
+      font-weight: bold;
+      padding: 10px;
+      background: #fffacd;
+      border: 2px solid #ffd700;
+      text-align: center;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🏆 Achievement System Test</h1>
+    
+    <div class="section">
+      <h2>Test Controls</h2>
+      <button onclick="performExorcism()">Perform Exorcism</button>
+      <button onclick="performMultipleExorcisms()">Perform 5 Exorcisms (Fast)</button>
+      <button onclick="discoverEasterEgg()">Discover Easter Egg</button>
+      <button onclick="discoverAllEasterEggs()">Discover All Easter Eggs</button>
+      <button onclick="resetProgress()">Reset Progress</button>
+      <button onclick="refreshStatus()">Refresh Status</button>
+      
+      <div class="exorcism-counter" id="exorcismCounter">
+        Recent Exorcisms: 0 (within 180s)
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Achievement Status</h2>
+      <ul class="achievement-list" id="achievementList">
+        <li>Loading achievements...</li>
+      </ul>
+    </div>
+    
+    <div class="section">
+      <h2>Easter Egg Status</h2>
+      <div id="easterEggStatus" class="status">
+        Loading...
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Test Log</h2>
+      <div id="log" class="status"></div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { useAdvancedHauntingStore } from './src/stores/advancedHaunting.js'
+    import { gameplayService } from './src/utils/gameplayService.js'
+    import { createPinia } from 'pinia'
+    
+    // Initialize Pinia
+    const pinia = createPinia()
+    
+    // Initialize stores
+    const hauntingStore = useAdvancedHauntingStore(pinia)
+    
+    // Initialize gameplay service
+    gameplayService.initialize()
+    
+    // Log function
+    function log(message, type = 'info') {
+      const logDiv = document.getElementById('log')
+      const timestamp = new Date().toLocaleTimeString()
+      const className = type === 'success' ? 'success' : type === 'error' ? 'error' : 'info'
+      logDiv.innerHTML = `<div class="${className}">[${timestamp}] ${message}</div>` + logDiv.innerHTML
+      console.log(`[Test] ${message}`)
+    }
+    
+    // Perform a single exorcism
+    window.performExorcism = function() {
+      const types = ['text', 'file', 'puzzle']
+      const type = types[Math.floor(Math.random() * types.length)]
+      
+      // Record exorcism
+      gameplayService.recordExorcism(type)
+      hauntingStore.statistics.exorcismsPerformed++
+      
+      log(`Performed ${type} exorcism`, 'success')
+      
+      // Check achievements
+      gameplayService.checkAchievements()
+      
+      refreshStatus()
+    }
+    
+    // Perform 5 exorcisms quickly
+    window.performMultipleExorcisms = function() {
+      log('Performing 5 exorcisms in quick succession...', 'info')
+      
+      for (let i = 0; i < 5; i++) {
+        setTimeout(() => {
+          performExorcism()
+          if (i === 4) {
+            log('Completed 5 exorcisms! Check if Exorcist achievement unlocked.', 'success')
+          }
+        }, i * 500) // 500ms between each
+      }
+    }
+    
+    // Discover a random easter egg
+    window.discoverEasterEgg = function() {
+      const easterEggs = ['konami-code', 'notepad-help', 'possession-66', 'secret-coordinate']
+      const undiscovered = easterEggs.filter(egg => !hauntingStore.discoveredEasterEggs.has(egg))
+      
+      if (undiscovered.length === 0) {
+        log('All easter eggs already discovered!', 'info')
+        return
+      }
+      
+      const egg = undiscovered[0]
+      hauntingStore.discoveredEasterEggs.add(egg)
+      
+      log(`Discovered easter egg: ${egg}`, 'success')
+      
+      // Dispatch event
+      window.dispatchEvent(new CustomEvent('easter-egg-discovered', {
+        detail: { eggId: egg }
+      }))
+      
+      // Check achievements
+      gameplayService.checkAchievements()
+      
+      refreshStatus()
+    }
+    
+    // Discover all easter eggs
+    window.discoverAllEasterEggs = function() {
+      const easterEggs = ['konami-code', 'notepad-help', 'possession-66', 'secret-coordinate']
+      
+      easterEggs.forEach(egg => {
+        if (!hauntingStore.discoveredEasterEggs.has(egg)) {
+          hauntingStore.discoveredEasterEggs.add(egg)
+          log(`Discovered easter egg: ${egg}`, 'success')
+        }
+      })
+      
+      // Dispatch event
+      window.dispatchEvent(new CustomEvent('easter-egg-discovered'))
+      
+      // Check achievements
+      gameplayService.checkAchievements()
+      
+      log('All easter eggs discovered! Check if Paranormal Investigator achievement unlocked.', 'success')
+      
+      refreshStatus()
+    }
+    
+    // Reset progress
+    window.resetProgress = function() {
+      hauntingStore.achievements.clear()
+      hauntingStore.discoveredEasterEggs.clear()
+      hauntingStore.statistics.exorcismsPerformed = 0
+      gameplayService.exorcismHistory = []
+      
+      log('Progress reset', 'info')
+      refreshStatus()
+    }
+    
+    // Refresh status display
+    window.refreshStatus = function() {
+      // Update achievement list
+      const achievementList = document.getElementById('achievementList')
+      const achievements = gameplayService.getAllAchievements()
+      
+      achievementList.innerHTML = achievements.map(achievement => {
+        const unlocked = hauntingStore.achievements.has(achievement.id)
+        return `
+          <li class="achievement-item ${unlocked ? 'unlocked' : ''}">
+            <div class="achievement-icon">${achievement.icon}</div>
+            <div class="achievement-info">
+              <div class="achievement-name">${achievement.name}</div>
+              <div class="achievement-desc">${achievement.description}</div>
+            </div>
+            <div class="achievement-status ${unlocked ? 'unlocked' : 'locked'}">
+              ${unlocked ? '✓ UNLOCKED' : '✗ LOCKED'}
+            </div>
+          </li>
+        `
+      }).join('')
+      
+      // Update easter egg status
+      const easterEggStatus = document.getElementById('easterEggStatus')
+      const allEasterEggs = ['konami-code', 'notepad-help', 'possession-66', 'secret-coordinate']
+      const discovered = Array.from(hauntingStore.discoveredEasterEggs)
+      
+      easterEggStatus.innerHTML = `
+        <strong>Discovered:</strong> ${discovered.length} / ${allEasterEggs.length}<br>
+        <strong>Easter Eggs:</strong> ${discovered.join(', ') || 'None yet'}<br>
+        <strong>Remaining:</strong> ${allEasterEggs.filter(e => !discovered.includes(e)).join(', ') || 'None'}
+      `
+      
+      // Update exorcism counter
+      const exorcismCounter = document.getElementById('exorcismCounter')
+      const recentCount = gameplayService.exorcismHistory.length
+      exorcismCounter.textContent = `Recent Exorcisms: ${recentCount} (within 180s)`
+      
+      // Update achievement progress
+      const progress = gameplayService.getAchievementProgress()
+      log(`Achievement Progress: ${progress.unlocked}/${progress.total} (${progress.percentage}%)`, 'info')
+    }
+    
+    // Listen for achievement unlocks
+    window.addEventListener('achievement-unlocked', (event) => {
+      const { name, description, icon } = event.detail
+      log(`🏆 ACHIEVEMENT UNLOCKED: ${icon} ${name} - ${description}`, 'success')
+      refreshStatus()
+    })
+    
+    // Initial status refresh
+    refreshStatus()
+    log('Achievement system test initialized', 'success')
+  </script>
+</body>
+</html>
