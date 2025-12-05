@@ -125,7 +125,7 @@ The system becomes progressively more haunted over time:
 6. **Paint Corruption** - Ghost can distort your drawings
 7. **Minesweeper AI** - The ghost plays against you
 8. **Spirit Board Communication** - Ask the Ouija board questions and receive AI-generated supernatural responses
-9. **Uncloseable Warnings** - Try to close the low disk space warning... if you dare
+9. **Uncloseable Warnings** - Try to close the low disk space warning.. if you dare
 10. **666 References** - Hidden throughout the system (memory tests, disk space, error codes)
 
 ### 📺 Visual Corruption Effects
